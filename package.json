@@ -25,6 +25,7 @@
     "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
+    "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "nodemon": "^2.0.7"
   }
 }
