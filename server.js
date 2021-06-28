@@ -20,6 +20,6 @@ app.use(route)
 app.use(passport.initialize())
 require('./config/passport')(passport)
 
-const PORT=process.env.PORT||3009
-app.listen(PORT,console.log(`Server running in ${process.env.NODE_ENV} mode on port : ${PORT}`))
+const PORT=process.env.PORT||3123
+app.listen(PORT,'192.168.43.41',console.log(`Server running in ${process.env.NODE_ENV} mode on port : ${PORT}`))
 
