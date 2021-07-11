@@ -17,6 +17,7 @@ app.use(cors())
 app.use(express.urlencoded({extended:false}))
 app.use(express.json())
 app.use(route) 
+app.use('/uploads',express.static('./uploads'))
 app.use(passport.initialize())
 require('./config/passport')(passport)
 
