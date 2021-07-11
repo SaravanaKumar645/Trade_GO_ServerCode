@@ -1,6 +1,17 @@
 var User = require('../models/user')
+var Product=require('../models/productImage')
 var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
+const multer =require('multer')
+
+const storage=multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,'./uploads')
+    },
+    filename:function(req,file,cb){
+        cb(null,new Date().toISOString().replace(/:/g,'-')+file.originalname)
+    }
+})
 
 var functions = {
     addNew: function (req, res) {
@@ -87,6 +98,61 @@ var functions = {
         else {
             return res.json({success: false, msg: 'No Headers'})
         }
+    },
+
+    uploadProducts:function(req,res){
+       multer({
+           storage:storage,
+           limits:{fileSize:1024*1024*5}
+
+      }).single('p_image')
+      const newProduct=new Product({
+        p_image:req.file.path,
+        p_name:req.body.p_name,
+        p_price:req.body.p_price,
+        p_stock:req.body.p_stock,
+        p_description:req.body.p_description,
+        p_category:req.body.p_category,
+      })
+      newProduct
+      .save()
+      .then(res=>{
+          console.log(res)
+          res.status(201).json({success:true,msg:"Product Added Successfully !",pid:res._id})
+      })
+      .catch(err=>{
+          console.log(err)
+          res.status(500).json({success:false,msg:"An error occured. Try again !"+err})
+      })
+    },
+    getUserProducts:function(req,res){
+        Product.find({
+            uid:req.body.uid
+        })
+        .exec()
+        .then(files=>{
+            const response={
+                count:files.length,
+                products:docs.map(doc=>{
+                    return{
+                        name:doc.p_name,
+                        desc:doc.p_description,
+                        category:doc.p_category,
+                        price:doc.p_price,
+                        stock:doc.p_stock,
+                        p_id:doc._id,
+                        image:doc.p_image,
+                        request:{
+                            type:"GET",url:""
+                        }
+                    }
+                })
+            }
+            res.status(200).json(response)
+        }).catch(err=>{
+            console.log(err)
+            res.status(500).json({success:false,msg:"Error :"+err})
+        })
     }
 }
 

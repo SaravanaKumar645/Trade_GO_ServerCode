@@ -17,4 +17,12 @@ router.post('/login', actions.authenticate)
 //@route GET /getinfo
 router.get('/getinfo', actions.getinfo)
 
+//@desc Upload Product images to the server
+//@route POST/upload-products
+router.post('/upload-products',actions.uploadProducts)
+
+//@desc Retrieving user products from the server
+//@route GET/get-products
+router.get('/get-products',actions.getUserProducts)
+
 module.exports=router
