@@ -1,28 +1,29 @@
 const express=require('express')
 const router=express.Router()
 const actions = require('../methods/actions')
-
+const method=actions.functions
+const upload=actions.upload
 router.get('/',(req,res)=>{
     res.send('Welcome to Trade GO')
 }) 
 //@desc Adding new user
 //@route POST /adduser
-router.post('/register', actions.addNew)
+router.post('/register', method.addNew)
 
 //@desc Authenticate a user
 //@route POST /authenticate
-router.post('/login', actions.authenticate)
+router.post('/login', method.authenticate)
 
 //@desc Get info on a user
 //@route GET /getinfo
-router.get('/getinfo', actions.getinfo)
+router.get('/getinfo', method.getinfo)
 
 //@desc Upload Product images to the server
 //@route POST/upload-products
-router.post('/upload-products',actions.uploadProducts)
+router.post('/upload-products',upload.single('p_image'),method.uploadProducts)
 
 //@desc Retrieving user products from the server
 //@route GET/get-products
-router.get('/get-products',actions.getUserProducts)
+router.get('/get-products',method.getUserProducts)
 
 module.exports=router

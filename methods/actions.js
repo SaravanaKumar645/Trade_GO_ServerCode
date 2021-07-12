@@ -4,15 +4,20 @@ var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
 const multer =require('multer')
 
+
 const storage=multer.diskStorage({
     destination:function(req,file,cb){
-        cb(null,'./uploads')
+        cb(null,'uploads/')
     },
     filename:function(req,file,cb){
         cb(null,new Date().toISOString().replace(/:/g,'-')+file.originalname)
     }
 })
-
+const upload=multer({
+    storage:storage,
+    limits:{fileSize:1024*1024*5},
+    
+})
 var functions = {
     addNew: function (req, res) {
         if ((!req.body.email) || (!req.body.password)||(!req.body.phone)||(!req.body.name)) {
@@ -101,45 +106,38 @@ var functions = {
     },
 
     uploadProducts:function(req,res){
-       multer({
-           storage:storage,
-           limits:{fileSize:1024*1024*5},
-           
-      }).single('p_image')(req1,res1,err=>{
-             if(err){
-                 res1.status(500).json({msg:'failed'})
-             }
-             res.send(req1.file)
-      })
+       
       const newProduct=new Product({
-        p_image:req.file.path,
+       
         p_name:req.body.p_name,
         p_price:req.body.p_price,
         p_stock:req.body.p_stock,
         p_description:req.body.p_description,
         p_category:req.body.p_category,
       })
+      if(req.file){
+          newProduct.p_image=req.file.path
+      }
       newProduct
       .save()
-      .then(res=>{
+      .then(response=>{
+          
           console.log(res)
-          res.status(201).json({success:true,msg:"Product Added Successfully !",pid:res._id})
+          return res.json({success:true,msg:"Product Added Successfully !",pid:res._id})
       })
       .catch(err=>{
-          console.log(err)
-          res.status(500).json({success:false,msg:"An error occured. Try again !"+err})
+        console.log(err)
+        return res.json({success:false,msg:"An error occured. Try again !"+err})
       })
     },
 
     getUserProducts:function(req,res){
-        Product.find({
-            uid:req.body.uid
-        })
+        Product.find()
         .exec()
         .then(files=>{
             const response={
                 count:files.length,
-                products:docs.map(doc=>{
+                products:files.map(doc=>{
                     return{
                         name:doc.p_name,
                         desc:doc.p_description,
@@ -162,4 +160,5 @@ var functions = {
     }
 }
 
-module.exports = functions
+module.exports ={functions,
+upload}
