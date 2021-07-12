@@ -103,9 +103,14 @@ var functions = {
     uploadProducts:function(req,res){
        multer({
            storage:storage,
-           limits:{fileSize:1024*1024*5}
-
-      }).single('p_image')
+           limits:{fileSize:1024*1024*5},
+           
+      }).single('p_image')(req1,res1,err=>{
+             if(err){
+                 res1.status(500).json({msg:'failed'})
+             }
+             res.send(req1.file)
+      })
       const newProduct=new Product({
         p_image:req.file.path,
         p_name:req.body.p_name,
@@ -125,7 +130,7 @@ var functions = {
           res.status(500).json({success:false,msg:"An error occured. Try again !"+err})
       })
     },
-    
+
     getUserProducts:function(req,res){
         Product.find({
             uid:req.body.uid
