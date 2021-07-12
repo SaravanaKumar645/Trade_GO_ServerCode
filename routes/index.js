@@ -19,7 +19,9 @@ router.get('/getinfo', actions.getinfo)
 
 //@desc Upload Product images to the server
 //@route POST/upload-products
-router.post('/upload-products',actions.uploadProducts)
+router.post('/upload-products',(req,res)=>{
+    res.send('hi')
+})
 
 //@desc Retrieving user products from the server
 //@route GET/get-products

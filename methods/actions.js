@@ -125,6 +125,7 @@ var functions = {
           res.status(500).json({success:false,msg:"An error occured. Try again !"+err})
       })
     },
+    
     getUserProducts:function(req,res){
         Product.find({
             uid:req.body.uid
