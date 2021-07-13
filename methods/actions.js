@@ -72,7 +72,7 @@ var functions = {
                     // res.json({success: false, msg: 'Authentication Failed, User not found'})
                     // res.status(403).send({success: false, msg:'Authentication Failed, User not found'})
                     res.status(403)
-                    return res.json({success:false,msg:"Checking text"})
+                    return res.json({success:false,msg:"User does not exist"})
                 } else {
                     user.comparePassword(req.body.password, function (err, isMatch) {
                         if (isMatch && !err) {
