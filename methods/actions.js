@@ -136,7 +136,7 @@ var functions = {
     },
 
     getUserProducts:function(req,res){
-        Product.find()
+       /* Product.find()
         .exec()
         .then(files=>{
             const response={
@@ -160,7 +160,8 @@ var functions = {
         }).catch(err=>{
             console.log(err)
             res.status(500).json({success:false,msg:"Error :"+err})
-        })
+        })*/
+        res.send({msg:'no error'})
     }
 }
 
