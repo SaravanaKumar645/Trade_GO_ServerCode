@@ -115,8 +115,12 @@ var functions = {
         p_description:req.body.p_description,
         p_category:req.body.p_category,
       })
-      if(req.file){
-          newProduct.p_image=req.file.path
+      if(req.files){
+          let path=''
+          req.files.forEach(file => {
+              path=path+file.path+','
+          });
+          newProduct.p_image=path.substring(0,path.lastIndexOf(','))
       }
       newProduct
       .save()
