@@ -172,12 +172,11 @@ var functions = {
                     }
                 })
             }
-            res.status(200).json(response)
+           return res.status(200).json(response)
         }).catch(err=>{
             console.log(err)
             res.status(500).json({success:false,msg:"Error :"+err})
         })
-        res.send({msg:'no error'})
     },
 
     uploadImagesofProducts:function(req,res){
