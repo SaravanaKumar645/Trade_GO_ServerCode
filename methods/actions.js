@@ -152,7 +152,7 @@ var functions = {
     },
 
     getUserProducts:function(req,res){
-       /* Product.find()
+        Product.find()
         .exec()
         .then(files=>{
             const response={
@@ -165,9 +165,9 @@ var functions = {
                         price:doc.p_price,
                         stock:doc.p_stock,
                         p_id:doc._id,
-                        image:doc.p_image,
+                        urls:doc.p_image_urls,
                         request:{
-                            type:"GET",url:""
+                            type:"GET",url:"/getUserProducts"
                         }
                     }
                 })
@@ -176,7 +176,7 @@ var functions = {
         }).catch(err=>{
             console.log(err)
             res.status(500).json({success:false,msg:"Error :"+err})
-        })*/
+        })
         res.send({msg:'no error'})
     },
 
