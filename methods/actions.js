@@ -3,8 +3,9 @@ var Product=require('../models/productImage')
 var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
 const multer =require('multer')
+const S3=require('aws-sdk/clients/s3')
 
-
+//Multer initialize
 const storage=multer.diskStorage({
     destination:function(req,file,cb){
         cb(null,'uploads/')
@@ -13,11 +14,24 @@ const storage=multer.diskStorage({
         cb(null,new Date().toISOString().replace(/:/g,'-')+file.originalname)
     }
 })
-const upload=multer({
-    storage:storage,
-    limits:{fileSize:1024*1024*5},
-    
+const st=multer.memoryStorage({
+    destination:function(req,file,cb){
+        cb(null,'')
+    }
 })
+const upload=multer({
+    storage:st
+ 
+})
+
+
+//AWS credentials initialization
+const bucketName = process.env.AWS_BUCKET_NAME
+const bucketregion = process.env.AWS_BUCKET_REGION
+const bucketaccessKeyId = process.env.AWS_ACCESS_KEY
+const bucketsecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+
+//Functions for operations
 var functions = {
     addNew: function (req, res) {
         if ((!req.body.email) || (!req.body.password)||(!req.body.phone)||(!req.body.name)) {
@@ -57,6 +71,7 @@ var functions = {
             
         }
     },
+
     authenticate: function (req, res) {
         console.log('in login')
         
@@ -94,6 +109,7 @@ var functions = {
         }
         )
     },
+
     getinfo: function (req, res) {
         if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
             var token = req.headers.authorization.split(' ')[1]
@@ -115,13 +131,13 @@ var functions = {
         p_description:req.body.p_description,
         p_category:req.body.p_category,
       })
-      if(req.files){
+      /*if(req.files){
           let path=''
           req.files.forEach(file => {
               path=path+file.path+','
           });
           newProduct.p_image=path.substring(0,path.lastIndexOf(','))
-      }
+      }*/
       newProduct
       .save()
       .then(response=>{
@@ -162,6 +178,62 @@ var functions = {
             res.status(500).json({success:false,msg:"Error :"+err})
         })*/
         res.send({msg:'no error'})
+    },
+
+    uploadImagesofProducts:function(req,res){
+        var ResponseData=[]
+        var paths=""
+        var flag=0
+        const p_image=req.files
+        const s3=new S3({
+           accessKeyId:bucketaccessKeyId,
+           secretAccessKey:bucketsecretAccessKey,
+           bucket:bucketName
+        })
+        p_image.map((item)=>{
+            var params={
+                Bucket:bucketName,
+                Key:item.originalname,
+                Body:item.buffer
+            }
+              s3.upload(params,function(err,data){ 
+                if(err){
+                    res.json({success:"false", msg:"Error : "+err})
+                }
+                    flag++
+                    console.log(data)
+                    ResponseData.push(data)
+                    paths+=data.Location+","
+                    
+                    if(flag==p_image.length){
+                        const newProduct=new Product({
+       
+                            p_name:req.body.p_name,
+                            p_price:req.body.p_price,
+                            p_stock:req.body.p_stock,
+                            p_description:req.body.p_description,
+                            p_category:req.body.p_category,
+                            p_image_urls:paths.substring(0,paths.length-1)
+                          })
+                          newProduct
+                          .save()
+                          .then(response=>{
+                              
+                              console.log(res)
+                              return res.json({success:true,msg:"Product Added Successfully !",pid:res._id})
+                          })
+                          .catch(err=>{
+                            console.log(err)
+                            return res.json({success:false,msg:"An error occured. Try again !"+err})
+                          })
+                        //res.json({success:"true", msg:"Files uploaded:",path:""+paths.substring(0,paths.length-1)})
+                    }
+                
+                
+               
+            })
+           
+        })
     }
 }
 

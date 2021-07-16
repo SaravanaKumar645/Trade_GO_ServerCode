@@ -20,7 +20,7 @@ router.get('/getinfo', method.getinfo)
 
 //@desc Upload Product images to the server
 //@route POST/upload-products
-router.post('/upload-products',upload.array('p_image[]'),method.uploadProducts)
+router.post('/upload-products',upload.array('p_image'),method.uploadImagesofProducts)
 
 //@desc Retrieving user products from the server
 //@route GET/get-products
