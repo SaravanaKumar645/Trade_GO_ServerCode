@@ -33,7 +33,7 @@ const bucketsecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
 
 //Functions for operations
 var functions = {
-    addNew: function (req, res) {
+    addNew: async (req, res)=> {
         if ((!req.body.email) || (!req.body.password)||(!req.body.phone)||(!req.body.name)) {
              res.json({success: false, msg: 'Enter all fields'})
             //process.exit(1)
@@ -46,7 +46,7 @@ var functions = {
                 password: req.body.password,
                 phone:req.body.phone
             });
-            User.findOne({
+           await  User.findOne({
                email:req.body.email
             }).countDocuments(function(err,num){
                 if(num==0){
@@ -72,10 +72,10 @@ var functions = {
         }
     },
 
-    authenticate: function (req, res) {
+    authenticate: async (req, res)=> {
         console.log('in login')
         
-        User.findOne({
+       await User.findOne({
             email: req.body.email
         }, function (err, user) {
             
@@ -151,8 +151,8 @@ var functions = {
       })
     },
 
-    getUserProducts:function(req,res){
-        Product.find()
+    getUserProducts:async(req,res)=>{
+       await Product.find()
         .exec()
         .then(files=>{
             const response={
