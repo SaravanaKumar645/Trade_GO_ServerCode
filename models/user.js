@@ -19,7 +19,7 @@ var userSchema=new schema({
          type:String,
          require:true
     }
-},{collection:'users'})
+},{timestamps:true},{collection:'users'})
 
 
 userSchema.pre('save', function (next) {

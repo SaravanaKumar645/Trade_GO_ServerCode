@@ -152,7 +152,9 @@ var functions = {
     },
 
     getUserProducts:async(req,res)=>{
-       await Product.find()
+       await Product.find({
+          user_id:req.body.user_id
+       })
         .exec()
         .then(files=>{
             const response={
@@ -165,6 +167,7 @@ var functions = {
                         price:doc.p_price,
                         stock:doc.p_stock,
                         p_id:doc._id,
+                        user_id:doc.user_id,
                         urls:doc.p_image_urls,
                         request:{
                             type:"GET",url:"/getUserProducts"
@@ -179,7 +182,7 @@ var functions = {
         })
     },
 
-    uploadImagesofProducts:function(req,res){
+    uploadImagesofProducts:async(req,res)=>{
         var ResponseData=[]
         var paths=""
         var flag=0
@@ -189,7 +192,7 @@ var functions = {
            secretAccessKey:bucketsecretAccessKey,
            bucket:bucketName
         })
-        p_image.map((item)=>{
+       await p_image.map((item)=>{
             var params={
                 Bucket:bucketName,
                 Key:item.originalname,
@@ -206,7 +209,7 @@ var functions = {
                     
                     if(flag==p_image.length){
                         const newProduct=new Product({
-       
+                            user_id:req.body.user_id,
                             p_name:req.body.p_name,
                             p_price:req.body.p_price,
                             p_stock:req.body.p_stock,
@@ -233,7 +236,36 @@ var functions = {
             })
            
         })
-    }
+    },
+
+    getAllProducts:async(req,res)=>{
+        await Product.find()
+         .exec()
+         .then(files=>{
+             const response={
+                 count:files.length,
+                 products:files.map(doc=>{
+                     return{
+                         name:doc.p_name,
+                         desc:doc.p_description,
+                         category:doc.p_category,
+                         price:doc.p_price,
+                         stock:doc.p_stock,
+                         p_id:doc._id,
+                         urls:doc.p_image_urls,
+                         user_id:doc.user_id,
+                         request:{
+                             type:"GET",url:"/getUserProducts"
+                         }
+                     }
+                 })
+             }
+            return res.status(200).json(response)
+         }).catch(err=>{
+             console.log(err)
+             res.status(500).json({success:false,msg:"Error :"+err})
+         })
+     }
 }
 
 module.exports ={functions,
