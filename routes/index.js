@@ -3,6 +3,7 @@ const router=express.Router()
 const actions = require('../methods/actions')
 const method=actions.functions
 const upload=actions.upload
+const up=actions.uploadDumm
 router.get('/',(req,res)=>{
     res.send('Welcome to Trade GO')
 }) 
@@ -30,5 +31,8 @@ router.get('/get-user-products',method.getUserProducts)
 //@route GET/get-all-products
 router.get('/get-all-products',method.getAllProducts)
 
+//@desc Upload Product images and details to the server of a single user with user_id.
+//@route POST/upload-products
+router.post('/upload',up.single('hi'),method.uploadDummy)
 
 module.exports=router

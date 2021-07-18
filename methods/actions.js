@@ -23,7 +23,10 @@ const upload=multer({
     storage:st
  
 })
-
+const uploadDumm=multer({
+    storage:storage
+ 
+})
 
 //AWS credentials initialization
 const bucketName = process.env.AWS_BUCKET_NAME
@@ -265,8 +268,13 @@ var functions = {
              console.log(err)
              res.status(500).json({success:false,msg:"Error :"+err})
          })
+     },
+     uploadDummy:function(req,res){
+         console.log(req.file)
+         
+         res.send({success:true,msg:"Hi"+req.file.path,pid:"200"})
      }
 }
 
 module.exports ={functions,
-upload}
+upload,uploadDumm}
