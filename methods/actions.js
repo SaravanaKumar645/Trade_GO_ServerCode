@@ -273,11 +273,14 @@ var functions = {
          
          if(req.file){
          console.log(req.file)
+         console.log(req.body.name)
+         console.log(req.body.price)
+         
          res.status(200)
          res.send({success:true,msg:"Hi"+req.file.path,pid:"200"})
          }else{
             res.status(403)
-             return res.send({success:true,msg:"Hi ! Failed "+err,pid:"400"})
+            return res.send({success:true,msg:"Hi ! Failed "+err,pid:"400"})
          }
          
      }
