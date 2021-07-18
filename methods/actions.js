@@ -269,7 +269,7 @@ var functions = {
              res.status(500).json({success:false,msg:"Error :"+err})
          })
      },
-     uploadDummy:function(req,res){
+     uploadDummy:function(req,res,err){
          
          if(req.file){
          console.log(req.file)
@@ -277,7 +277,7 @@ var functions = {
          res.send({success:true,msg:"Hi"+req.file.path,pid:"200"})
          }else{
             res.status(403)
-             return res.send({success:true,msg:"Hi ! Failed ",pid:"400"})
+             return res.send({success:true,msg:"Hi ! Failed "+err,pid:"400"})
          }
          
      }
