@@ -269,9 +269,13 @@ var functions = {
              res.status(500).json({success:false,msg:"Error :"+err})
          })
      },
-     uploadDummy:function(req,res){
+     uploadDummy:function(req,res,err){
+         if(err){
+             res.status(403)
+             return res.send({success:true,msg:"Hi ! Failed ",pid:"400"})
+         }
          console.log(req.file)
-         
+         res.status(200)
          res.send({success:true,msg:"Hi"+req.file.path,pid:"200"})
      }
 }
