@@ -178,10 +178,12 @@ var functions = {
                     }
                 })
             }
-           return res.status(200).json(response)
+            res.status(200)
+           return res.json({success:false,msg:response.count+" products found .",data:response})
         }).catch(err=>{
             console.log(err)
-            res.status(500).json({success:false,msg:"Error :"+err})
+            res.status(408)
+            res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null})
         })
     },
 
@@ -203,7 +205,8 @@ var functions = {
             }
               s3.upload(params,function(err,data){ 
                 if(err){
-                    res.json({success:"false", msg:"Error : "+err})
+                    res.status(408)
+                    res.json({success:"false", msg:"Network Interrupted . Try Again !"+err})
                 }
                     flag++
                     console.log(data)
@@ -225,11 +228,13 @@ var functions = {
                           .then(response=>{
                               
                               console.log(res)
+                              res.status(200)
                               return res.json({success:true,msg:"Product Added Successfully !",pid:res._id})
                           })
                           .catch(err=>{
                             console.log(err)
-                            return res.json({success:false,msg:"An error occured. Try again !"+err})
+                            res.status(408)
+                            return res.json({success:false,msg:"An error adding details. Try again !"+err})
                           })
                         //res.json({success:"true", msg:"Files uploaded:",path:""+paths.substring(0,paths.length-1)})
                     }
@@ -263,12 +268,14 @@ var functions = {
                      }
                  })
              }
-            return res.status(200).json(response)
+             res.status(200)
+            return res.json({success:false,msg:response.count+"  products found .",data:response})
          }).catch(err=>{
              console.log(err)
-             res.status(500).json({success:false,msg:"Error :"+err})
+             res.status(408)
+             res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null})
          })
-     },
+    },
      uploadDummy:function(req,res,err){
          
          if(req.file){
@@ -283,7 +290,7 @@ var functions = {
             return res.send({success:true,msg:"Hi ! Failed "+err,pid:"400"})
          }
          
-     }
+    }
 }
 
 module.exports ={functions,
