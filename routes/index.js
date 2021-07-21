@@ -33,7 +33,7 @@ router.get('/get-all-products',method.getAllProducts)
 
 //@desc Upload Product images and details to the server of a single user with user_id.
 //@route POST/upload-products
-//for demo purpose . Not used in Final deploy
+//  !!!!!for demo purpose . Not used in Final deploy!!!!!
 router.post('/upload',up.single('hi'),method.uploadDummy)
 
 //@desc Find a product by its id and update its stock count

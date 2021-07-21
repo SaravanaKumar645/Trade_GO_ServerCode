@@ -28,11 +28,50 @@ const uploadDumm=multer({
  
 })
 
-//AWS credentials initialization
+//AWS S3 
+// Credentials initialization ---S3
 const bucketName = process.env.AWS_BUCKET_NAME
 const bucketregion = process.env.AWS_BUCKET_REGION
 const bucketaccessKeyId = process.env.AWS_ACCESS_KEY
 const bucketsecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+// object initialization ---S3
+const s3Object=new S3({
+    accessKeyId:bucketaccessKeyId,
+    secretAccessKey:bucketsecretAccessKey,
+    bucket:bucketName,
+    region:bucketregion
+ })
+
+ //delete objects function ---S3
+ function delete_S3_Objects(key1,key2,key3){
+        var func_response
+        var params={
+            Bucket:bucketName,
+            Delete:{
+                Objects:[
+                    {
+                        Key:key1
+                    },
+                    {
+                        Key:key2
+                    },
+                    {
+                        Key:key3
+                    }
+                ]
+            }
+         }
+         s3Object.deleteObjects(params,function(err,data){
+            if(err){
+                func_response=false
+            }else{
+                console.log(data)
+                func_response=true
+            }
+         })
+      return func_response
+     
+ }
 
 //Functions for operations
 var functions = {
@@ -164,7 +203,12 @@ var functions = {
                         stock:doc.p_stock,
                         p_id:doc._id,
                         user_id:doc.user_id,
-                        urls:doc.p_image_urls,
+                        product_key_1:doc.image_key_1,
+                         product_key_2:doc.image_key_2,
+                         product_key_3:doc.image_key_3,
+                         product_url_1:doc.image_url_1,
+                         product_url_2:doc.image_url_2,
+                         product_url_3:doc.image_url_3
                         
                     }
                 })
@@ -180,21 +224,18 @@ var functions = {
 
     uploadImagesofProducts:async(req,res)=>{
         var ResponseData=[]
-        var paths=""
+        var product_location=[]
+        var product_key=[]
+        
         var flag=0
         const p_image=req.files
-        const s3=new S3({
-           accessKeyId:bucketaccessKeyId,
-           secretAccessKey:bucketsecretAccessKey,
-           bucket:bucketName
-        })
-       await p_image.map((item)=>{
+        await p_image.map((item)=>{
             var params={
                 Bucket:bucketName,
                 Key:item.originalname,
                 Body:item.buffer
             }
-              s3.upload(params,function(err,data){ 
+              s3Object.upload(params,function(err,data){ 
                 if(err){
                     res.status(408)
                     res.json({success:"false", msg:"Network Interrupted . Try Again !"+err})
@@ -202,7 +243,9 @@ var functions = {
                     flag++
                     console.log(data)
                     ResponseData.push(data)
-                    paths+=data.Location+","
+                    product_location.push(data.Location)
+                    product_key.push(data.Key)
+                    
                     
                     if(flag==p_image.length){
                         const newProduct=new Product({
@@ -212,7 +255,13 @@ var functions = {
                             p_stock:req.body.p_stock,
                             p_description:req.body.p_description,
                             p_category:req.body.p_category,
-                            p_image_urls:paths.substring(0,paths.length-1)
+                            image_key_1:product_key[0],
+                            image_key_2:product_key[1],
+                            image_key_3:product_key[2],
+                            image_url_1:product_location[0],
+                            image_url_2:product_location[1],
+                            image_url_3:product_location[2]
+    
                           })
                           newProduct
                           .save()
@@ -227,7 +276,7 @@ var functions = {
                             res.status(408)
                             return res.json({success:false,msg:"An error adding details. Try again !"+err})
                           })
-                        //res.json({success:"true", msg:"Files uploaded:",path:""+paths.substring(0,paths.length-1)})
+                        
                     }
                 
                 
@@ -251,8 +300,14 @@ var functions = {
                          price:doc.p_price,
                          stock:doc.p_stock,
                          p_id:doc._id,
-                         urls:doc.p_image_urls,
                          user_id:doc.user_id,
+                         product_key_1:doc.image_key_1,
+                         product_key_2:doc.image_key_2,
+                         product_key_3:doc.image_key_3,
+                         product_url_1:doc.image_url_1,
+                         product_url_2:doc.image_url_2,
+                         product_url_3:doc.image_url_3
+    
                      }
                  })
              }
@@ -266,17 +321,6 @@ var functions = {
     },
 
     updateProduct_Stock:async(req,res,next)=>{
-       /* try{
-            const id=req.params.id
-            const stock='3422'
-            const options={new:true}
-
-            const result=await Product.findByIdAndUpdate(id,stock,options)
-            res.send(result)
-        }catch(error){
-            console.log(error.msg)
-            res.send(error)
-        }*/
         const update=req.body.p_stock
         const id=req.body.p_id
         await Product.findByIdAndUpdate(id,{p_stock: update},{new:true},function(err,file){
@@ -304,7 +348,31 @@ var functions = {
 
     deleteProduct:async(req,res)=>{
         try{
-            await Product.findByIdAndDelete(req.body.p_id,function(err){
+            var object_keys=[]
+            await Product.findById(req.body.p_id,function(err,product){
+                if(err){
+                    res.status(408)
+                    return res.send({success:false,msg:'Unexpected error ! ERROR:'+err,product:null})
+                }
+                if(product==null){
+                  res.status(405)
+                  res.send({success:false,msg:'No Product Found .',currentStock:null})
+                }else{
+                  console.log(product)
+                  
+                  object_keys.push(product.image_key_1)
+                  object_keys.push(product.image_key_2)
+                  object_keys.push(product.image_key_3)
+                  var delete_response=delete_S3_Objects(object_keys[0],object_keys[1],object_keys[2])
+                  if(delete_response==false){
+                    res.status(408)
+                    return res.send({success:false,msg:'Cannot delete product . Try again !'})
+                  }
+                  
+                }
+            })
+             
+             Product.findByIdAndDelete(req.body.p_id,function(err){
                 if(err){
                     console.log(err)
                     res.status(408)
@@ -338,6 +406,7 @@ var functions = {
          
     }
 }
+
 
 module.exports ={functions,
 upload,uploadDumm}
