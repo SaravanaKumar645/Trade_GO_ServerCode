@@ -263,7 +263,7 @@ var functions = {
                 })
             }
             res.status(200)
-           return res.json({success:false,msg:count+" products found .",data:response})
+           return res.json({success:false,msg:count+" products found .",data:JSON.stringify(response)})
         }).catch(err=>{
             console.log(err)
             res.status(408)
