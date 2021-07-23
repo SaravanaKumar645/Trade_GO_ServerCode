@@ -1,11 +1,14 @@
 var User = require('../models/user')
 var bcrypt=require('bcrypt')
 var Product=require('../models/productImage')
+var Cart=require('../models/userCart')
 var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
 const multer =require('multer')
 const S3=require('aws-sdk/clients/s3')
-const { Model } = require('mongoose')
+//const db=require('../config/db')
+//var dbName=''
+//dbName=db.name1
 
 
 //Multer initialize
@@ -434,9 +437,58 @@ var functions = {
 
     addTo_Cart:async(req,res)=>{
         try{
+           
+           const uid=req.body.user_id
+           const pid=req.body.p_id
+          
+           await Product.findOne({_id:pid,user_id:uid},async function(err,product){
+               if(err){
+                console.log(err)
+                res.status(403)
+                return res.send({success:false,msg:'Cannot add to cart . ERROR: '+err,productDetails:null})
+               }
+               if(product==null){
+                console.log(product)
+                res.status(408)
+                return res.send({success:false,msg:'No Product found .Try login again!',productDetails:null})
+               }else{
+                console.log(product)
+                const newcartItem= Cart({
+                    _id:product._id,
+                    user_id:product.user_id,
+                    p_name:product.p_name,
+                    p_price:product.p_price,
+                    p_stock:product.p_stock,
+                    p_description:product.p_description,
+                    p_category:product.p_category,
+                    image_key_1:product.image_key_1,
+                    image_key_2:product.image_key_2,
+                    image_key_3:product.image_key_3,
+                    image_url_1:product.image_url_1,
+                    image_url_2:product.image_url_2,
+                    image_url_3:product.image_url_3
+                })
+               await newcartItem
+                          .save()
+                          .then(cartfile=>{
+                              
+                              console.log(cartfile)
+                              res.status(200)
+                              return res.json({success:true,msg:"Product Added to cart !",productDetails:cartfile})
+                          })
+                          .catch(err=>{
+                            console.log(err)
+                            res.status(403)
+                            return res.json({success:false,msg:"An error occured. Try again !ERROR: "+err})
+                          })
+                
+               }
+           })
 
         }catch(err){
-
+            console.log(err)
+            res.status(403)
+            return res.send({success:false,msg:'Cannot add to cart . ERROR: '+err,productDetails:null})
         }
     },
     

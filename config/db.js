@@ -1,6 +1,7 @@
+
 const mongoose=require('mongoose')
 const dbConfig=require('./dbConfig')
-
+var dbName=''
 const connectDB=async()=>{
     try{
         const conn=await mongoose.connect(dbConfig.database,{
@@ -9,10 +10,13 @@ const connectDB=async()=>{
             useUnifiedTopology:true,
             useFindAndModify:false
         })
-            console.log(`MongoDB connected : ${conn.connection.host}`)
+        
+        dbName=conn.connections[0].name  
+        console.log(`MongoDB connected : ${conn.connection.host}`)
         }catch(err){
             console.log(err)
             process.exit(1)
         }
     }
-module.exports=connectDB
+    console.log(dbName)
+module.exports={connectDB,dbName}
