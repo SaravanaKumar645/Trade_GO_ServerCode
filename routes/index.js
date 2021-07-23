@@ -29,11 +29,11 @@ router.post('/upload-products',upload.array('p_image'),method.uploadImagesofProd
 
 //@desc Retrieving user products from the server
 //@route GET/get-user-products
-router.get('/get-user-products',method.getUserProducts)
+router.post('/get-user-products',method.getUserProducts)
 
 //@desc Retrieving all products from the server
 //@route GET/get-all-products
-router.get('/get-all-products',method.getAllProducts)
+router.post('/get-all-products',method.getAllProducts)
 
 //@desc Find a product by its id and update its stock count
 //@route PATCH/update-product-stock
