@@ -237,8 +237,13 @@ var functions = {
        })
         .exec()
         .then(files=>{
+            const count=files.length
+            var prod=[]
+            for(var i=0;i<count;i++){
+                prod.push(files[i])
+                console.log(prod[i])
+            }
             const response={
-                count:files.length,
                 products:files.map(doc=>{
                     return{
                         name:doc.p_name,
@@ -254,12 +259,11 @@ var functions = {
                          product_url_1:doc.image_url_1,
                          product_url_2:doc.image_url_2,
                          product_url_3:doc.image_url_3
-                        
                     }
                 })
             }
             res.status(200)
-           return res.json({success:false,msg:response.count+" products found .",data:response})
+           return res.json({success:false,msg:count+" products found .",data:response})
         }).catch(err=>{
             console.log(err)
             res.status(408)
