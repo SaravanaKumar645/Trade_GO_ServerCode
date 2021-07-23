@@ -1,9 +1,12 @@
 var User = require('../models/user')
+var bcrypt=require('bcrypt')
 var Product=require('../models/productImage')
 var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
 const multer =require('multer')
 const S3=require('aws-sdk/clients/s3')
+const { Model } = require('mongoose')
+
 
 //Multer initialize
 const storage=multer.diskStorage({
@@ -72,10 +75,11 @@ const s3Object=new S3({
       return func_response
      
  }
+ 
 
 //Functions for operations
 var functions = {
-    addNew: async (req, res)=> {
+    SignUp: async (req, res)=> {
         if ((!req.body.email) || (!req.body.password)||(!req.body.phone)||(!req.body.name)) {
              res.json({success: false, msg: 'Enter all fields'})
             //process.exit(1)
@@ -88,6 +92,7 @@ var functions = {
                 password: req.body.password,
                 phone:req.body.phone
             });
+            
            await  User.findOne({
                email:req.body.email
             }).countDocuments(function(err,num){
@@ -112,7 +117,7 @@ var functions = {
         }
     },
 
-    authenticate: async (req, res)=> {
+    SignIn: async (req, res)=> {
         console.log('in login')
         
        await User.findOne({
@@ -126,6 +131,7 @@ var functions = {
                     res.status(403)
                     return res.json({success:false,msg:"User does not exist"})
                 } else {
+                    console.log(user)
                     user.comparePassword(req.body.password, function (err, isMatch) {
                         if (isMatch && !err) {
                             var uid1=''+user._id
@@ -143,6 +149,42 @@ var functions = {
                 }
         }
         )
+    },
+
+    resetPassword:async function(req,res){
+    
+        var pass=req.body.n_password
+        var user_id=req.body.user_id
+        var email=req.body.email
+        try{
+          var salt = await bcrypt.genSalt(10)
+          const hashedPassword= await bcrypt.hash(pass,salt)
+          console.log('Hashed Password:  '+hashedPassword)
+          await User.findOneAndUpdate({_id:user_id,email:email},{password:hashedPassword},{new:true},function(err,user){
+            if(err){
+                console.log(err)
+                res.status(403)
+                return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err,userDetails:null})
+            }
+            if(user==null){
+                console.log(user)
+                res.status(408)
+                return res.send({success:false,msg:'No user found !. Check your email id and try again.',userDetails:null})
+            }else{
+                console.log(user)
+                res.status(200)
+                res.send({success:true,msg:'Password Successfully changed. Good to go !',userDetails:user})
+            }
+          })
+          
+        
+        }catch(err){
+
+            console.log(err)
+            res.status(403)
+            return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err,userDetails:null})
+        }
+       
     },
 
     getinfo: function (req, res) {
@@ -312,7 +354,7 @@ var functions = {
                  })
              }
              res.status(200)
-            return res.json({success:false,msg:response.count+"  products found .",data:response})
+            return res.json({success:true,msg:response.count+"  products found .",data:response})
          }).catch(err=>{
              console.log(err)
              res.status(408)
@@ -390,6 +432,15 @@ var functions = {
         
     },
 
+    addTo_Cart:async(req,res)=>{
+        try{
+
+        }catch(err){
+
+        }
+    },
+    
+//...............below these are for demo purpose........
      uploadDummy:function(req,res,err){
          
          if(req.file){
