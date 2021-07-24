@@ -393,14 +393,14 @@ var functions = {
     deleteProduct:async(req,res)=>{
         try{
             var object_keys=[]
-            await Product.findById(req.body.p_id,function(err,product){
+            await Product.findById(req.body.p_id,async function(err,product){
                 if(err){
                     res.status(408)
-                    return res.send({success:false,msg:'Unexpected error ! ERROR:'+err,product:null})
+                    return res.send({success:false,msg:'Unexpected error ! ERROR:'+err})
                 }
                 if(product==null){
                   res.status(405)
-                  res.send({success:false,msg:'No Product Found .',currentStock:null})
+                  res.send({success:false,msg:'No Product Found .'})
                 }else{
                   console.log(product)
                   
@@ -408,25 +408,28 @@ var functions = {
                   object_keys.push(product.image_key_2)
                   object_keys.push(product.image_key_3)
                   var delete_response=delete_S3_Objects(object_keys[0],object_keys[1],object_keys[2])
+                  console.log("RESPONSE : "+delete_response)
                   if(delete_response==false){
                     res.status(408)
                     return res.send({success:false,msg:'Cannot delete product . Try again !'})
+                  }else{
+                    await Product.findByIdAndDelete(req.body.p_id,function(err){
+                        if(err){
+                            console.log(err)
+                            res.status(408)
+                           return res.send({success:false,msg:'Cannot delete product . Try again !'})
+                        }else{
+                            //console.log(res)
+                            res.status(200)
+                            res.send({success:true,msg:'Product successfully deleted .'})
+                        } 
+                    })
                   }
                   
                 }
             })
              
-             Product.findByIdAndDelete(req.body.p_id,function(err){
-                if(err){
-                    console.log(err)
-                    res.status(408)
-                   return res.send({success:false,msg:'Cannot delete product . Try again !'})
-                }else{
-                    //console.log(res)
-                    res.status(200)
-                    res.send({success:true,msg:'Product successfully deleted .'})
-                } 
-            })
+            
         }catch(err){
             res.status(403)
             res.send({success:false,msg:'Unexpected error ! ERROR: '+err})
