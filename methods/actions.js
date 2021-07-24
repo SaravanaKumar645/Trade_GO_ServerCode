@@ -238,11 +238,6 @@ var functions = {
         .exec()
         .then(files=>{
             const count=files.length
-            var prod=[]
-            for(var i=0;i<count;i++){
-                prod.push(files[i])
-                console.log(prod[i])
-            }
             const response={
                 products:files.map(doc=>{
                     return{
@@ -262,7 +257,7 @@ var functions = {
                     }
                 })
             }
-            res.status(200)
+           res.status(200)
            return res.json({success:false,msg:count+" products found .",data:JSON.stringify(response)})
         }).catch(err=>{
             console.log(err)
@@ -376,18 +371,18 @@ var functions = {
             if(err){
                 console.log(err)
                 res.status(408)
-                return res.send({success:false,msg:'Cannot update stock ! ERROR:'+err,currentStock:null})
+                return res.send({success:false,msg:'Cannot update stock ! ERROR:'+err,currentStock:"null"})
             }
             if(file==null){
                 console.log(file)
                 res.status(403)
-                res.send({success:false,msg:'No Product Found .',currentStock:null})
+                res.send({success:false,msg:'No Product Found .',currentStock:"null"})
             
             }else{
                 console.log(file)
                 res.status(200)
                 const response={p_id:file._id,product:file}
-                res.send({success:true,msg:'Product Stock updated .',currentStock:response})
+                res.send({success:true,msg:'Product Stock updated .',currentStock:JSON.stringify(response)})
             
             }
     
