@@ -106,7 +106,9 @@ var functions = {
                         }
                         else {
                             var uid1=''+newUser._id 
-                            return res.status(200).send({success: true, msg: 'Successfully created : ' +newUser.email+'  user',id:uid1})
+                            var mail=''+newUser.email
+                            var name=''+newUser.name
+                            return res.status(200).send({success: true, msg: 'Successfully created user : '+mail,id:uid1,email:mail,name:name})
                           
                         }
                     })
@@ -138,10 +140,12 @@ var functions = {
                     user.comparePassword(req.body.password, function (err, isMatch) {
                         if (isMatch && !err) {
                             var uid1=''+user._id
+                            var mail=''+user.email
+                            var name=''+user.name
                             var token = jwt.encode(user, config.secret)
                             
                             console.log('in login success ! ID: '+uid1)
-                             return res.status(200).send({success: true, msg:`Successful Login !  UserId : `+uid1,id:uid1})
+                            return res.status(200).send({success: true, msg:`Successful Login !  UserId : `+uid1,id:uid1,email:mail,name:name})
                              
                         }
                         else {
