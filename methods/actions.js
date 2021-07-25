@@ -6,9 +6,9 @@ var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
 const multer =require('multer')
 const S3=require('aws-sdk/clients/s3')
-//const db=require('../config/db')
-//var dbName=''
-//dbName=db.name1
+const nodeMailer=require('nodemailer')
+
+//nodemailer config 
 
 
 //Multer initialize
@@ -100,11 +100,32 @@ var functions = {
                email:req.body.email
             }).countDocuments(function(err,num){
                 if(num==0){
-                    newUser.save(function (err, newUser) {
+                    newUser.save(async function (err, newUser) {
                         if (err) {
                             return res.status(408).send({success: false, msg: 'Failed to create User !. Try again'})
                         }
                         else {
+                            
+                            var transporter=nodeMailer.createTransport({
+                                service:'gmail',
+                                auth:{
+                                    user:process.env.MAIL_ID,
+                                    pass:process.env.MAIL_PASS
+                                }
+                            })
+                            var mailOpt={
+                                from:'admin@tradego.com',
+                                to:newUser.email,
+                                subject:'Your Sign up was successful',
+                                html:'<p><h2>Welcome to <font color=#4964FB>Trade GO</font></h2><br>Your account was created successfully.<br>Explore trading across the world by using our application. <br><h3>Happy Trading !</h3></p>'
+                            }
+                             transporter.sendMail(mailOpt,function(error,info){
+                                if(err){
+                                    console.log(error)
+                                }else{
+                                    console.log('sent :'+info)
+                                }
+                            })
                             var uid1=''+newUser._id 
                             var mail=''+newUser.email
                             var name=''+newUser.name
