@@ -225,18 +225,29 @@ var functions = {
     requestPasswordMail:async function(req,res){
         crypto.randomBytes(32,async (err,buffer)=>{
           if(err){
+              console.log('Inside crypto block :'+err)
               res.status(403)
              return res.send({success:false,msg:'An error occured !. Try again ',token_id:"nil"})
-          }
+          }else{
           const token = buffer.toString("hex")
-          await User.findOne({_id:req.body.user_id,email:req.body.email})
-          .then(user=>{
-              if(!user){
-                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again',token_id:"nil"})
+          await User.findOne({_id:req.body.user_id,email:req.body.email},function(err,user){
+              if(err){
+                console.log('Inside outer block :'+err)
+                res.status(403)
+                return res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
               }
+          
+              if(user==null){
+                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again',token_id:"nil"})
+              }else{
               user.resetToken = token
               user.expireToken = Date.now() + 1800000
-              user.save().then((_result)=>{
+              user.save(function(err,user){
+                  if(err){
+                    console.log('Inside catch nested block :'+err)
+                    res.status(403)
+                    return res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
+                  }else{
                   var resetLinkMail={
                       to:user.email,
                       from:"no-reply@tradego.com",
@@ -260,21 +271,14 @@ var functions = {
                       }else{
                           console.log('Mail Sent : '+info)
                           res.status(200)
-                          res.send({success:true,msg:'Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.',token_id:token})
+                         return res.send({success:true,msg:'Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.',token_id:token})
                       }
                   })
-                 
+                }
               })
-              .catch(err=>{
-                  res.status(403)
-                  res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
-              })
- 
+            }
           })
-          .catch(err=>{
-              res.status(403)
-              res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
-          })
+        }
       })
     },
 
