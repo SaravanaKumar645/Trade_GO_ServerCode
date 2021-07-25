@@ -200,7 +200,7 @@ var functions = {
                   var salt = await bcrypt.genSalt(10)
                   var hashedPassword= await bcrypt.hash(pass,salt)
                   console.log('Hashed Password:  '+hashedPassword)
-                  await User.findByIdAndUpdate({_id:user_id},{password:hashedPassword,expireToken:undefined,resetToken:undefined},{new:true},function(err,user){
+                  await User.findOneAndUpdate({resetToken:token,email:email},{password:hashedPassword,expireToken:undefined,resetToken:undefined},{new:true},function(err,user){
                   if(err){
                     res.status(405)
                     return res.send({success:false,msg:'An error occurred .Try Again !. ERROR: '+err})
