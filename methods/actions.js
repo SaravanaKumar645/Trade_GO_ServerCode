@@ -7,9 +7,16 @@ var config = require('../config/dbConfig')
 const multer =require('multer')
 const S3=require('aws-sdk/clients/s3')
 const nodeMailer=require('nodemailer')
+const crypto = require('crypto')
 
 //nodemailer config 
-
+const transporter=nodeMailer.createTransport({
+    service:'gmail',
+    auth:{
+        user:process.env.MAIL_ID,
+        pass:process.env.MAIL_PASS
+    }
+})
 
 //Multer initialize
 const storage=multer.diskStorage({
@@ -106,18 +113,12 @@ var functions = {
                         }
                         else {
                             
-                            var transporter=nodeMailer.createTransport({
-                                service:'gmail',
-                                auth:{
-                                    user:process.env.MAIL_ID,
-                                    pass:process.env.MAIL_PASS
-                                }
-                            })
+                           
                             var mailOpt={
                                 from:'admin@tradego.com',
                                 to:newUser.email,
                                 subject:'Your Sign up was successful',
-                                html:'<p><h2>Welcome to <font color=#4964FB>Trade GO</font></h2><br>Your account was created successfully.<br>Explore trading across the world by using our application. <br><h3>Happy Trading !</h3></p>'
+                                html:`<p><h2>Welcome to <font color=#4964FB>Trade GO</font></h2><br><h2>Hi, ${newUser.name}</h2><br>Your account was created successfully.<br>Explore trading across the world by using our application. <br><h3>Happy Trading !</h3></p>`
                             }
                              transporter.sendMail(mailOpt,function(error,info){
                                 if(err){
@@ -180,39 +181,101 @@ var functions = {
     },
 
     resetPassword:async function(req,res){
-    
-        var pass=req.body.n_password
         var user_id=req.body.user_id
         var email=req.body.email
+        var token=req.body.token_id
         try{
-          var salt = await bcrypt.genSalt(10)
-          const hashedPassword= await bcrypt.hash(pass,salt)
-          console.log('Hashed Password:  '+hashedPassword)
-          await User.findOneAndUpdate({_id:user_id,email:email},{password:hashedPassword},{new:true},function(err,user){
-            if(err){
+            const pass=req.body.n_password
+          await User.findOne({resetToken:token,email:email,expireToken:{$gte:Date.now()}},async(err,user)=>{
+              if(err){
                 console.log(err)
                 res.status(403)
-                return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err,userDetails:null})
-            }
-            if(user==null){
+                return res.send({success:false,msg:'Try again . Token Session Expired ! ERROR: '+err})
+              }
+             if(user==null){
                 console.log(user)
                 res.status(408)
-                return res.send({success:false,msg:'No user found !. Check your email id and try again.',userDetails:null})
-            }else{
-                console.log(user)
-                res.status(200)
-                res.send({success:true,msg:'Password Successfully changed. Good to go !',userDetails:user})
-            }
-          })
-          
+                return res.send({success:false,msg:'Try again . Token Session Expired !'+user})
+              }else{
+                  var salt = await bcrypt.genSalt(10)
+                  var hashedPassword= await bcrypt.hash(pass,salt)
+                  console.log('Hashed Password:  '+hashedPassword)
+                  await User.findByIdAndUpdate({_id:user_id},{password:hashedPassword,expireToken:undefined,resetToken:undefined},{new:true},function(err,user){
+                  if(err){
+                    res.status(403)
+                    return res.send({success:false,msg:'An error occurred .Try Again !. ERROR: '+err})
+                  }else{
+                    console.log(user)
+                    res.status(200)
+                    res.send({success:true,msg:'Password updated successfully .'})
+                  }
+                  
+                  })
+               } 
+           })
         
         }catch(err){
-
             console.log(err)
             res.status(403)
-            return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err,userDetails:null})
+            return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err})
         }
        
+    },
+
+    requestPasswordMail:async function(req,res){
+        crypto.randomBytes(32,async (err,buffer)=>{
+          if(err){
+              res.status(403)
+             return res.send({success:false,msg:'An error occured !. Try again '})
+          }
+          const token = buffer.toString("hex")
+          await User.findOne({email:req.body.email})
+          .then(user=>{
+              if(!user){
+                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again'})
+              }
+              user.resetToken = token
+              user.expireToken = Date.now() + 1800000
+              user.save().then((_result)=>{
+                  var resetLinkMail={
+                      to:user.email,
+                      from:"no-reply@tradego.com",
+                      subject:"Password reset link -reg",
+                      html:`
+                      <h2><center>Reset your Password</center></h2><br>
+                      <p>Hi <b>${user.name} ,</b><br><br>
+                      You have requested for changing your password.<br><br>
+                       Please find the <b>Token</b> below .Copy it and paste it in the requested field, then enter your <b>new password</b> and click submit.<br><br>
+                       If you do not want to change your password , kindly ignore this mail.<br><br>
+                       <h3><center><b>Your Password Reset Token : </b></center></h3>
+                       <center><font color=blue>${token}</font></center><br><br><br><br><br>
+                       <b>This token will be valid for only <font color=red> 
+                       next 30 minutes.</font></b>
+                      `
+                  }
+                  transporter.sendMail(resetLinkMail,function(error,info){
+                      if(error){
+                          res.status(408)
+                          return res.send({success:false,msg:'Email not sent . Kindly try again !'})
+                      }else{
+                          console.log('Mail Sent : '+info)
+                          res.status(200)
+                          res.send({success:true,msg:'Check your mail. Sometimes the mail will be in spam folder.'})
+                      }
+                  })
+                 
+              })
+              .catch(err=>{
+                  res.status(403)
+                  res.send({success:false,msg:'Unexpected error . Try again !'})
+              })
+ 
+          })
+          .catch(err=>{
+              res.status(403)
+              res.send({success:false,msg:'Unexpected error . Try again !'})
+          })
+      })
     },
 
     getinfo: function (req, res) {
@@ -224,36 +287,6 @@ var functions = {
         else {
             return res.json({success: false, msg: 'No Headers'})
         }
-    },
-
-    uploadProducts:function(req,res){
-       
-      const newProduct=new Product({
-       
-        p_name:req.body.p_name,
-        p_price:req.body.p_price,
-        p_stock:req.body.p_stock,
-        p_description:req.body.p_description,
-        p_category:req.body.p_category,
-      })
-      /*if(req.files){
-          let path=''
-          req.files.forEach(file => {
-              path=path+file.path+','
-          });
-          newProduct.p_image=path.substring(0,path.lastIndexOf(','))
-      }*/
-      newProduct
-      .save()
-      .then(response=>{
-          
-          console.log(res)
-          return res.json({success:true,msg:"Product Added Successfully !",pid:res._id})
-      })
-      .catch(err=>{
-        console.log(err)
-        return res.json({success:false,msg:"An error occured. Try again !"+err})
-      })
     },
 
     getUserProducts:async(req,res)=>{
@@ -291,7 +324,7 @@ var functions = {
         })
     },
 
-    uploadImagesofProducts:async(req,res)=>{
+    uploadProductDetails:async(req,res)=>{
         var ResponseData=[]
         var product_location=[]
         var product_key=[]
@@ -518,7 +551,7 @@ var functions = {
             return res.send({success:false,msg:'Cannot add to cart . ERROR: '+err,productDetails:null})
         }
     },
-    
+   
 //...............below these are for demo purpose........
      uploadDummy:function(req,res,err){
          

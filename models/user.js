@@ -18,7 +18,9 @@ var userSchema=new schema({
     phone:{
          type:String,
          require:true
-    }
+    },
+    resetToken:String,
+    expireToken:String
 },{timestamps:true},{collection:'users'})
 
 //Schema pre hooks --i.e. This will be executed before saving details to the certain document.
