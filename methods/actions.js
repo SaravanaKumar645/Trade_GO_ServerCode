@@ -229,7 +229,7 @@ var functions = {
              return res.send({success:false,msg:'An error occured !. Try again '})
           }
           const token = buffer.toString("hex")
-          await User.findOne({email:req.body.email})
+          await User.findOne({_id:req.body.user_id,email:req.body.email})
           .then(user=>{
               if(!user){
                   return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again'})
