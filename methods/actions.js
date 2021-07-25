@@ -232,7 +232,7 @@ var functions = {
           await User.findOne({_id:req.body.user_id,email:req.body.email})
           .then(user=>{
               if(!user){
-                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again',token_id:null})
+                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again',token_id:"nil"})
               }
               user.resetToken = token
               user.expireToken = Date.now() + 1800000
@@ -256,11 +256,11 @@ var functions = {
                   transporter.sendMail(resetLinkMail,function(error,info){
                       if(error){
                           res.status(408)
-                          return res.send({success:false,msg:'Email not sent . Kindly try again !',token_id:null})
+                          return res.send({success:false,msg:'Email not sent . Kindly try again !',token_id:"nil"})
                       }else{
                           console.log('Mail Sent : '+info)
                           res.status(200)
-                          res.send({success:true,msg:'Check your mail. Sometimes the mail will be in spam folder.',token_id:token})
+                          res.send({success:true,msg:'Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.',token_id:"nil"})
                       }
                   })
                  
