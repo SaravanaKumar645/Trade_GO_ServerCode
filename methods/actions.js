@@ -260,7 +260,7 @@ var functions = {
                       }else{
                           console.log('Mail Sent : '+info)
                           res.status(200)
-                          res.send({success:true,msg:'Check your mail. Sometimes the mail will be in spam folder.'})
+                          res.send({success:true,msg:'Check your mail. Sometimes the mail will be in spam folder.',token_id:token})
                       }
                   })
                  
