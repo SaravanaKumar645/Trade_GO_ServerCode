@@ -230,7 +230,7 @@ var functions = {
              return res.send({success:false,msg:'An error occured !. Try again ',token_id:"nil"})
           }else{
           const token = buffer.toString("hex")
-          await User.findOne({_id:req.body.user_id,email:req.body.email},function(err,user){
+          await User.findOne({email:req.body.email},function(err,user){
               if(err){
                 console.log('Inside outer block :'+err)
                 res.status(403)
