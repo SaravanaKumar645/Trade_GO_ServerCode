@@ -226,13 +226,13 @@ var functions = {
         crypto.randomBytes(32,async (err,buffer)=>{
           if(err){
               res.status(403)
-             return res.send({success:false,msg:'An error occured !. Try again '})
+             return res.send({success:false,msg:'An error occured !. Try again ',token_id:null})
           }
           const token = buffer.toString("hex")
           await User.findOne({_id:req.body.user_id,email:req.body.email})
           .then(user=>{
               if(!user){
-                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again'})
+                  return res.status(408).send({success:false,msg:'User not exists !. Check the email and try again',token_id:null})
               }
               user.resetToken = token
               user.expireToken = Date.now() + 1800000
@@ -256,7 +256,7 @@ var functions = {
                   transporter.sendMail(resetLinkMail,function(error,info){
                       if(error){
                           res.status(408)
-                          return res.send({success:false,msg:'Email not sent . Kindly try again !'})
+                          return res.send({success:false,msg:'Email not sent . Kindly try again !',token_id:null})
                       }else{
                           console.log('Mail Sent : '+info)
                           res.status(200)
@@ -267,13 +267,13 @@ var functions = {
               })
               .catch(err=>{
                   res.status(403)
-                  res.send({success:false,msg:'Unexpected error . Try again !'})
+                  res.send({success:false,msg:'Unexpected error . Try again !',token_id:null})
               })
  
           })
           .catch(err=>{
               res.status(403)
-              res.send({success:false,msg:'Unexpected error . Try again !'})
+              res.send({success:false,msg:'Unexpected error . Try again !',token_id:null})
           })
       })
     },
