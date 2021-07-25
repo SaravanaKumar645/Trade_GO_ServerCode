@@ -137,7 +137,7 @@ var functions = {
                      
                 }else {
                     
-                     return res.status(403).send({success: false, msg: 'Sign In failed : User Aleady exists !'})
+                     return res.status(405).send({success: false, msg: 'Sign In failed : User Aleady exists !'})
                 }
             })
             
@@ -155,7 +155,7 @@ var functions = {
                    res.status(408)
                    return res.json({success: false, msg:'Authentication Failed. ERROR :'+err})}
                 if (!user) {
-                    res.status(403)
+                    res.status(405)
                     return res.json({success:false,msg:"User does not exist"})
                 } else {
                     console.log(user)
@@ -171,7 +171,7 @@ var functions = {
                              
                         }
                         else {
-                            res.status(403)
+                            res.status(405)
                             return res.json({success: false, msg: 'Authentication failed, wrong password'})
                         }
                     })
@@ -189,7 +189,7 @@ var functions = {
           await User.findOne({resetToken:token,email:email,expireToken:{$gte:Date.now()}},async(err,user)=>{
               if(err){
                 console.log(err)
-                res.status(403)
+                res.status(405)
                 return res.send({success:false,msg:'Try again . Token Session Expired ! ERROR: '+err})
               }
              if(user==null){
@@ -202,7 +202,7 @@ var functions = {
                   console.log('Hashed Password:  '+hashedPassword)
                   await User.findByIdAndUpdate({_id:user_id},{password:hashedPassword,expireToken:undefined,resetToken:undefined},{new:true},function(err,user){
                   if(err){
-                    res.status(403)
+                    res.status(405)
                     return res.send({success:false,msg:'An error occurred .Try Again !. ERROR: '+err})
                   }else{
                     console.log(user)
@@ -216,7 +216,7 @@ var functions = {
         
         }catch(err){
             console.log(err)
-            res.status(403)
+            res.status(405)
             return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err})
         }
        
@@ -226,14 +226,14 @@ var functions = {
         crypto.randomBytes(32,async (err,buffer)=>{
           if(err){
               console.log('Inside crypto block :'+err)
-              res.status(403)
+              res.status(405)
              return res.send({success:false,msg:'An error occured !. Try again ',token_id:"nil"})
           }else{
           const token = buffer.toString("hex")
           await User.findOne({email:req.body.email},function(err,user){
               if(err){
                 console.log('Inside outer block :'+err)
-                res.status(403)
+                res.status(405)
                 return res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
               }
           
@@ -245,7 +245,7 @@ var functions = {
               user.save(function(err,user){
                   if(err){
                     console.log('Inside catch nested block :'+err)
-                    res.status(403)
+                    res.status(405)
                     return res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
                   }else{
                   var resetLinkMail={
@@ -437,7 +437,7 @@ var functions = {
             }
             if(file==null){
                 console.log(file)
-                res.status(403)
+                res.status(405)
                 res.send({success:false,msg:'No Product Found .',currentStock:"null"})
             
             }else{
@@ -493,7 +493,7 @@ var functions = {
              
             
         }catch(err){
-            res.status(403)
+            res.status(405)
             res.send({success:false,msg:'Unexpected error ! ERROR: '+err})
         }
         
@@ -508,7 +508,7 @@ var functions = {
            await Product.findOne({_id:pid,user_id:uid},async function(err,product){
                if(err){
                 console.log(err)
-                res.status(403)
+                res.status(405)
                 return res.send({success:false,msg:'Cannot add to cart . ERROR: '+err,productDetails:null})
                }
                if(product==null){
@@ -542,7 +542,7 @@ var functions = {
                           })
                           .catch(err=>{
                             console.log(err)
-                            res.status(403)
+                            res.status(405)
                             return res.json({success:false,msg:"An error occured. Try again !ERROR: "+err})
                           })
                 
@@ -551,7 +551,7 @@ var functions = {
 
         }catch(err){
             console.log(err)
-            res.status(403)
+            res.status(405)
             return res.send({success:false,msg:'Cannot add to cart . ERROR: '+err,productDetails:null})
         }
     },
@@ -567,7 +567,7 @@ var functions = {
          res.status(200)
          res.send({success:true,msg:"Hi"+req.file.path,pid:"200"})
          }else{
-            res.status(403)
+            res.status(405)
             return res.send({success:true,msg:"Hi ! Failed "+err,pid:"400"})
          }
          
