@@ -226,7 +226,7 @@ var functions = {
         crypto.randomBytes(32,async (err,buffer)=>{
           if(err){
               res.status(403)
-             return res.send({success:false,msg:'An error occured !. Try again ',token_id:null})
+             return res.send({success:false,msg:'An error occured !. Try again ',token_id:"nil"})
           }
           const token = buffer.toString("hex")
           await User.findOne({_id:req.body.user_id,email:req.body.email})
@@ -260,20 +260,20 @@ var functions = {
                       }else{
                           console.log('Mail Sent : '+info)
                           res.status(200)
-                          res.send({success:true,msg:'Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.',token_id:"nil"})
+                          res.send({success:true,msg:'Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.',token_id:token})
                       }
                   })
                  
               })
               .catch(err=>{
                   res.status(403)
-                  res.send({success:false,msg:'Unexpected error . Try again !',token_id:null})
+                  res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
               })
  
           })
           .catch(err=>{
               res.status(403)
-              res.send({success:false,msg:'Unexpected error . Try again !',token_id:null})
+              res.send({success:false,msg:'Unexpected error . Try again !',token_id:"nil"})
           })
       })
     },
