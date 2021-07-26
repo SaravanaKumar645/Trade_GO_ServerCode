@@ -275,15 +275,31 @@ var functions = {
                       from:"no-reply@tradego.com",
                       subject:"Password reset link -reg",
                       html:`
-                      <h2><center>Reset your Password</center></h2><br>
-                      <p>Hi <b>${user.name} ,</b><br><br>
-                      You have requested for changing your password.<br><br>
-                       Please find the <b>Token</b> below .Copy it and paste it in the requested field, then enter your <b>new password</b> and click submit.<br><br>
-                       If you do not want to change your password , kindly ignore this mail.<br><b>This token will be valid for only <font color=red> 
-                       next 30 minutes.</font></b>
-                       <h3><center><b>Your Password Reset Token : </b></center></h3>
-                       <center><font color=blue>${token}</font></center><br>
-                      `
+                                <center>
+                                <div class="emailbox" style="width: auto; padding: 40px; height: auto; border-radius: 10px; border: 3px outset rgb(36, 105, 253); display: list-item;">
+                                <center>
+                                <font face="Arial" color="#0099ff"><h1>TRADE GO</h1></font>
+                                </center>
+                                <h3>Hi <font color="#0099ff">${user.name}</font> ,</h3>
+                                <p><center><h4>All set ! You can now change your Password !</h4></center></p>
+                                <p class="content" style="font-weight: normal;">
+                                As we have received a request from you for changing the password , we are here below providing you with a <font color="#0099ff"><b>token</b></font> to reset your password. Enter it in the required field and click <font color="#4964FB"><b>Reset Password.</b></font><br> If you don't want to reset the password , kindly ignore this mail.
+                                </p>
+                                <p><b>NOTE: </b> This token will be valid only for the next <font size="4px" color="red"><b>30 minutes .</b></font></p>
+                                <center>
+                                <div class="endgreet" style="width: auto; height: auto; margin-top: 45px; margin-bottom: 45px; letter-spacing: 1.5px; border-radius: 15px;
+                                padding:10px; border: 3px outset #000000; background-color: #ffffff; text-align: center; box-shadow: 5px 5px 10px 2px rgba(156, 154, 154, 0.932);">
+                                    <p><h4>RESET  TOKEN :</h4></p>
+                                    <p><font face="Arial" color="#0099ff">${token}</font></p>
+                                 </div>
+                                <img src="https://trade-go.s3.ap-south-1.amazonaws.com/Adobe_Post_20210726_1855140.9031505963136341+(2).png" style="object-fit:contain;
+                                            width:100px;
+                                            height:100px;
+                                            border: solid 1px #CCC">
+                                </center>
+                                </div>
+                                </center>
+                                `
                   }
                   transporter.sendMail(resetLinkMail,function(error,info){
                       if(error){
