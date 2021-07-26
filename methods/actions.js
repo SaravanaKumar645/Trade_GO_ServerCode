@@ -290,7 +290,7 @@ var functions = {
                                 <div class="endgreet" style="width: auto; height: auto; margin-top: 45px; margin-bottom: 45px; letter-spacing: 1.5px; border-radius: 15px;
                                 padding:10px; border: 3px outset #000000; background-color: #ffffff; text-align: center; box-shadow: 5px 5px 10px 2px rgba(156, 154, 154, 0.932);">
                                     <p><h4>RESET  TOKEN :</h4></p>
-                                    <p><font face="Arial" color="#0099ff">${token}</font></p>
+                                    <p><font face="Arial" color="#0099ff" style="letter-spacing: 0px;">${token}</font></p>
                                  </div>
                                 <img src="https://trade-go.s3.ap-south-1.amazonaws.com/Adobe_Post_20210726_1855140.9031505963136341+(2).png" style="object-fit:contain;
                                             width:100px;
