@@ -8,7 +8,6 @@ const multer =require('multer')
 const S3=require('aws-sdk/clients/s3')
 const nodeMailer=require('nodemailer')
 const crypto = require('crypto')
-
 //nodemailer config 
 const transporter=nodeMailer.createTransport({
     service:'gmail',
@@ -17,7 +16,6 @@ const transporter=nodeMailer.createTransport({
         pass:process.env.MAIL_PASS
     }
 })
-
 //Multer initialize
 const storage=multer.diskStorage({
     destination:function(req,file,cb){
@@ -112,13 +110,32 @@ var functions = {
                             return res.status(408).send({success: false, msg: 'Failed to create User !. Try again'})
                         }
                         else {
-                            
-                           
                             var mailOpt={
                                 from:'admin@tradego.com',
                                 to:newUser.email,
                                 subject:'Your Sign up was successful',
-                                html:`<p><h2>Welcome to <font color=#4964FB>Trade GO</font></h2><br><h2>Hi, ${newUser.name}</h2><br>Your account was created successfully.<br>Explore trading across the world by using our application. <br><h3>Happy Trading !</h3></p>`
+                                html:`<center>
+                                <div class="emailbox" style="width: auto; padding: 40px; height: auto; border-radius: 10px; border: 3px outset rgb(36, 105, 253); display: list-item;">
+                                <center>
+                                <font face="Arial" color="#0099ff"><h1>TRADE GO</h1></font>
+                                <font face="Comic sans MS"><p>Thanks for sign up !</p></font>
+                                <i class="fa fa-thumbs-o-up" style="font-size:48px;color:#0099ff"></i>
+                                </center>
+                                <h3><left>Welcome <font color="#0099ff">${newUser.name}</font> ,</left></h3>
+                                <p><center><h4>We are in a great pleasure of welcoming you on board !</h4></center></p>
+                                <p class="content" style="font-weight: normal;"><b><font size="4px" color="#4964FB">       Trade GO</font></b>     gives users the opportunity to sell and buy products online.
+                                    We are all about to making it easy for you to trade online. You can now interact with the users and trade goods all over the world. </p>
+                                <center>
+                                <div class="endgreet" style="width: auto; height: auto; margin-top: 45px; margin-bottom: 45px; letter-spacing: 1.5px; border-radius: 15px; border: 3px outset #0099ff; background-color: #0099ff; text-align: center; box-shadow: 5px 5px 10px 2px rgba(156, 154, 154, 0.932);">
+                                    <p><b><font face="Arial" color="white">! HAPPY TRADING !</font></b></p>
+                                </div>
+                                <img src="https://trade-go.s3.ap-south-1.amazonaws.com/Adobe_Post_20210726_1855140.9031505963136341+(2).png" style="object-fit:contain;
+                                            width:100px;
+                                            height:100px;
+                                            border: solid 1px #CCC">
+                                </center>
+                                </div>
+                                </center> `  
                             }
                              transporter.sendMail(mailOpt,function(error,info){
                                 if(err){
@@ -204,10 +221,15 @@ var functions = {
                   if(err){
                     res.status(405)
                     return res.send({success:false,msg:'An error occurred .Try Again !. ERROR: '+err})
+                  }
+                  if(user==null){
+                    console.log(user)
+                    res.status(408)
+                    return res.send({success:false,msg:'Try again . Token Session Expired !'+user})
                   }else{
                     console.log(user)
                     res.status(200)
-                    res.send({success:true,msg:'Password updated successfully .'})
+                    return res.send({success:true,msg:'Password updated successfully .'})
                   }
                   
                   })
@@ -257,11 +279,10 @@ var functions = {
                       <p>Hi <b>${user.name} ,</b><br><br>
                       You have requested for changing your password.<br><br>
                        Please find the <b>Token</b> below .Copy it and paste it in the requested field, then enter your <b>new password</b> and click submit.<br><br>
-                       If you do not want to change your password , kindly ignore this mail.<br><br>
-                       <h3><center><b>Your Password Reset Token : </b></center></h3>
-                       <center><font color=blue>${token}</font></center><br><br><br><br><br>
-                       <b>This token will be valid for only <font color=red> 
+                       If you do not want to change your password , kindly ignore this mail.<br><b>This token will be valid for only <font color=red> 
                        next 30 minutes.</font></b>
+                       <h3><center><b>Your Password Reset Token : </b></center></h3>
+                       <center><font color=blue>${token}</font></center><br>
                       `
                   }
                   transporter.sendMail(resetLinkMail,function(error,info){

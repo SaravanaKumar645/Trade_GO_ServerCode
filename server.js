@@ -5,7 +5,10 @@ const db=require('./config/db')
 const passport=require('passport')
 const route=require('./routes/index')
 const connectDB=db.connectDB
+
+
 console.log('hello')
+
 connectDB();
 
 const app=express()
