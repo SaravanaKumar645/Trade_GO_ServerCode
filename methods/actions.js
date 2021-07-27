@@ -8,6 +8,7 @@ const multer =require('multer')
 const S3=require('aws-sdk/clients/s3')
 const nodeMailer=require('nodemailer')
 const crypto = require('crypto')
+
 //nodemailer config 
 const transporter=nodeMailer.createTransport({
     service:'gmail',
@@ -201,8 +202,8 @@ var functions = {
         var user_id=req.body.user_id
         var email=req.body.email
         var token=req.body.token_id
-        try{
-            const pass=req.body.n_password
+        
+          const pass=req.body.n_password
           await User.findOne({resetToken:token,email:email,expireToken:{$gte:Date.now()}},async(err,user)=>{
               if(err){
                 console.log(err)
@@ -234,14 +235,7 @@ var functions = {
                   
                   })
                } 
-           })
-        
-        }catch(err){
-            console.log(err)
-            res.status(405)
-            return res.send({success:false,msg:'Cannot Reset Password . ERROR: '+err})
-        }
-       
+           })   
     },
 
     requestPasswordMail:async function(req,res){
@@ -300,7 +294,7 @@ var functions = {
                                 </div>
                                 </center>
                                 `
-                  }
+                  } 
                   transporter.sendMail(resetLinkMail,function(error,info){
                       if(error){
                           res.status(408)
@@ -336,7 +330,7 @@ var functions = {
        })
         .exec()
         .then(files=>{
-            const count=files.length
+            const count=''+files.length
             const response={
                 products:files.map(doc=>{
                     return{
@@ -357,11 +351,11 @@ var functions = {
                 })
             }
            res.status(200)
-           return res.json({success:false,msg:count+" products found .",data:JSON.stringify(response)})
+           return res.json({success:false,msg:count+" products found .",data:JSON.stringify(response),count:count})
         }).catch(err=>{
             console.log(err)
             res.status(408)
-            res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null})
+            res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null,count:-1})
         })
     },
 
