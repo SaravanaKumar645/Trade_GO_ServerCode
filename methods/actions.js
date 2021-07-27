@@ -172,7 +172,7 @@ var functions = {
                    res.status(408)
                    return res.json({success: false, msg:'Authentication Failed. ERROR :'+err})}
                 if (!user) {
-                    res.status(405)
+                    res.status(406)   
                     return res.json({success:false,msg:"User does not exist"})
                 } else {
                     console.log(user)
