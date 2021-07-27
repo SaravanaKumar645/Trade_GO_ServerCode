@@ -107,7 +107,7 @@ var functions = {
                 if(num==0){
                     newUser.save(async function (err, newUser) {
                         if (err) {
-                            return res.status(408).send({success: false, msg: 'Failed to create User !. Try again',id:"",email:"",name:""})
+                            return res.status(408).send({success: false, msg: 'Failed to create User !. Try again',id:"nil",email:"nil",name:"nil"})
                         }
                         else {
                             var mailOpt={
@@ -154,7 +154,7 @@ var functions = {
                      
                 }else {
                     
-                     return res.status(405).send({success: false, msg: 'Sign In failed : User Aleady exists !',id:"",email:"",name:""})
+                     return res.status(405).send({success: false, msg: 'Sign In failed : User Aleady exists !',id:"nil",email:"nil",name:"nil"})
                 }
             })
             
