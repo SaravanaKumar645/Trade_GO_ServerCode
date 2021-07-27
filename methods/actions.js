@@ -92,7 +92,6 @@ var functions = {
         if ((!req.body.email) || (!req.body.password)||(!req.body.phone)||(!req.body.name)) {
              res.json({success: false, msg: 'Enter all fields'})
             //process.exit(1)
-            
         }
         else {
             var newUser = User({
@@ -108,7 +107,7 @@ var functions = {
                 if(num==0){
                     newUser.save(async function (err, newUser) {
                         if (err) {
-                            return res.status(408).send({success: false, msg: 'Failed to create User !. Try again'})
+                            return res.status(408).send({success: false, msg: 'Failed to create User !. Try again',id:"",email:"",name:""})
                         }
                         else {
                             var mailOpt={
@@ -155,7 +154,7 @@ var functions = {
                      
                 }else {
                     
-                     return res.status(405).send({success: false, msg: 'Sign In failed : User Aleady exists !'})
+                     return res.status(405).send({success: false, msg: 'Sign In failed : User Aleady exists !',id:"",email:"",name:""})
                 }
             })
             
