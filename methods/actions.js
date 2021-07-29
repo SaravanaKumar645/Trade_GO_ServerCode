@@ -354,7 +354,7 @@ var functions = {
         }).catch(err=>{
             console.log(err)
             res.status(408)
-            res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null,count:-1})
+            res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null,count:0})
         })
     },
 
@@ -423,11 +423,12 @@ var functions = {
     },
 
     getAllProducts:async(req,res)=>{
-        await Product.find()
+        const uid=req.body.user_id
+        await Product.find({user_id:{$ne:uid}})
          .exec()
          .then(files=>{
+            const count=''+files.length
              const response={
-                 count:files.length,
                  products:files.map(doc=>{
                      return{
                          name:doc.p_name,
@@ -448,11 +449,11 @@ var functions = {
                  })
              }
              res.status(200)
-            return res.json({success:true,msg:response.count+"  products found .",data:response})
+            return res.json({success:true,msg:count+"  products found .",data:JSON.stringify(response),count:count})
          }).catch(err=>{
              console.log(err)
              res.status(408)
-             res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null})
+             res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null,count:0})
          })
     },
 
