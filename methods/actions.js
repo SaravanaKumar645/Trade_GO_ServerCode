@@ -533,10 +533,10 @@ var functions = {
     addTo_Cart:async(req,res)=>{
         try{
            
-           const uid=req.body.user_id
+           
            const pid=req.body.p_id
           
-           await Product.findOne({_id:pid,user_id:uid},async function(err,product){
+           await Product.findOne({_id:pid},async function(err,product){
                if(err){
                 console.log(err)
                 res.status(405)
