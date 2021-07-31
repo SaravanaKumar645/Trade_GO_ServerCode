@@ -548,7 +548,7 @@ var functions = {
                 return res.send({success:false,msg:'No Product found .Try login again!',productDetails:null})
                }else{
                 console.log(product)
-                const newcartItem= Cart({
+                const newcartItem= new Cart({
                     _id:product._id,
                     user_id:uid,
                     p_name:product.p_name,
