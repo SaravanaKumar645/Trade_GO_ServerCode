@@ -533,7 +533,7 @@ var functions = {
     addTo_Cart:async(req,res)=>{
         try{
            
-           
+           const uid=req.body.user_id
            const pid=req.body.p_id
           
            await Product.findOne({_id:pid},async function(err,product){
@@ -550,7 +550,7 @@ var functions = {
                 console.log(product)
                 const newcartItem= Cart({
                     _id:product._id,
-                    user_id:product.user_id,
+                    user_id:uid,
                     p_name:product.p_name,
                     p_price:product.p_price,
                     p_stock:product.p_stock,
