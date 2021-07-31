@@ -62,7 +62,7 @@ router.post('/retrieve-cart-products',method.retrieveCartProducts)
 
 //@desc Find a cart item by its id and delete it permanently
 //@route DELETE/delete-cart-item
-router.delete('/delete-cart-item',method.deleteProduct)
+router.delete('/delete-cart-item',method.deleteCartProduct)
 
 
 

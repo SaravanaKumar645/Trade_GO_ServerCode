@@ -624,13 +624,13 @@ var functions = {
 
     deleteCartProduct:async(req,res)=>{
         try{
-                    await Cart.findByIdAndDelete(req.body.p_id,function(err){
+                    await Cart.findByIdAndDelete(req.body.p_id,function(err,file){
                         if(err){
                             console.log(err)
                             res.status(408)
                            return res.send({success:false,msg:'Cannot remove product . Try again !'})
                         }else{
-                            //console.log(res)
+                            console.log(file)
                             res.status(200)
                             res.send({success:true,msg:'Product removed from cart .'})
                         } 
