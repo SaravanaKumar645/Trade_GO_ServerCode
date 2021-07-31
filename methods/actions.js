@@ -621,6 +621,26 @@ var functions = {
               res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null,count:0})
           })
     },
+
+    deleteCartProduct:async(req,res)=>{
+        try{
+                    await Cart.findByIdAndDelete(req.body.p_id,function(err){
+                        if(err){
+                            console.log(err)
+                            res.status(408)
+                           return res.send({success:false,msg:'Cannot remove product . Try again !'})
+                        }else{
+                            //console.log(res)
+                            res.status(200)
+                            res.send({success:true,msg:'Product removed from cart .'})
+                        } 
+                    })
+            
+        }catch(err){
+            res.status(405)
+            res.send({success:false,msg:'Unexpected error ! ERROR: '+err})
+        }
+    },
    
 //...............below these are for demo purpose........
      uploadDummy:function(req,res,err){

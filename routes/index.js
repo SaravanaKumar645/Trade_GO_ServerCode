@@ -56,9 +56,14 @@ router.delete('/delete-product',method.deleteProduct)
 //@route POST/add-to-cart
 router.post('/add-to-cart',method.addTo_Cart)
 
-//@desc Add a product to cart on user's request.
-//@route POST/add-to-cart
+//@desc Retrieve cart items of a user
+//@route POST/retrieve-cart-products
 router.post('/retrieve-cart-products',method.retrieveCartProducts)
+
+//@desc Find a cart item by its id and delete it permanently
+//@route DELETE/delete-cart-item
+router.delete('/delete-cart-item',method.deleteProduct)
+
 
 
 //--------------BELOW THESE ARE ONLY FOR DEMO . THESE SHOULD NOT BE PART OF FINAL VERSION----------------
