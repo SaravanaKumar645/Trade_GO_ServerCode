@@ -64,6 +64,14 @@ router.post('/retrieve-cart-products',method.retrieveCartProducts)
 //@route DELETE/delete-cart-item
 router.delete('/delete-cart-item',method.deleteCartProduct)
 
+//@desc Select quantity and send otp to buy a product.
+//@route POST/product-buy-sendOTP
+router.post('/product-buy-sendOTP',method.productBuyInitiate)
+
+//@desc Enter the OTP and confirm purchase.
+//@route POST/product-buy-verifyOTP
+router.post('/product-buy-verifyOTP',method.productBuyConfirm)
+
 
 
 //--------------BELOW THESE ARE ONLY FOR DEMO . THESE SHOULD NOT BE PART OF FINAL VERSION----------------

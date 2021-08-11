@@ -5,12 +5,15 @@ const db=require('./config/db')
 const passport=require('passport')
 const route=require('./routes/index')
 const connectDB=db.connectDB
-
+// const actions=require('./methods/actions')
+// const sendsms=actions.send_OTP_SMS
+// const verifysms=actions.verify_OTP_SMS
 
 console.log('hello')
 
-connectDB();
-
+connectDB()
+//sendsms('6383562025')
+//verifysms('6383562025','5681')
 const app=express()
 if(process.env.NODE_ENV==='development'){
     app.use(morgan('dev'))

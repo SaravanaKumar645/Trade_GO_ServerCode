@@ -9,6 +9,7 @@ const S3=require('aws-sdk/clients/s3')
 const nodeMailer=require('nodemailer')
 const crypto = require('crypto')
 
+
 //nodemailer config 
 const transporter=nodeMailer.createTransport({
     service:'gmail',
@@ -84,7 +85,54 @@ const s3Object=new S3({
       return func_response
      
  }
- 
+ //send SMS function ---TWILIO
+ const accountSID=process.env.TWILIO_ACCOUNT_SID
+ const authToken=process.env.TWILIO_AUTH_TOKEN
+ const twilioPhone=process.env.TWILIO_PHONE_NUMBER
+ const serviceSID=process.env.TWILIO_SERVICE_SID
+ const twilio=require('twilio')(accountSID,authToken)
+ const sendNormalSMS=(phone,message)=>{
+     
+     twilio.messages
+     .create({
+         body:message,
+         from:twilioPhone,
+         to:phone
+     })
+     .then(msg=>{
+         console.log("SMS Sent :: "+msg)
+     })
+ }
+ const send_OTP_SMS=function(phone){
+     twilio.verify
+     .services(serviceSID)
+     .verifications
+     .create({
+         to:`+91${phone}`,
+         channel:'sms'
+     })
+     .then(data=>{
+         console.log(data)
+     })
+ }
+ const verify_OTP_SMS=function(phone,Vcode){
+     twilio.verify
+     .services(serviceSID)
+     .verificationChecks
+     .create({
+         to:`+91${phone}`,
+         code:Vcode
+     })
+     .then(data=>{
+         if(data.status==='approved'){
+             console.log(data)
+             return data.valid
+         }else{
+             console.log(data)
+             return false
+         }
+     })
+ }
 
 //Functions for operations
 var functions = {
@@ -641,6 +689,51 @@ var functions = {
             res.send({success:false,msg:'Unexpected error ! ERROR: '+err})
         }
     },
+    
+    productBuyInitiate:async(req,res)=>{
+        await Product.findById(req.body.p_id,async function(err,product){
+            if(err){
+                res.status(408)
+                return res.send({success:false,msg:'Unexpected error ! ERROR:'+err,phoneNumber:'null'})
+            }
+            if(product==null){
+              res.status(405)
+              res.send({success:false,msg:'No Product Found .',phoneNumber:'null'})
+            }else{
+                await User.findById(req.body.uid,function(err,user){
+                    if(err){
+                        res.status(419)
+                        return res.send({success:false,msg:'Unexpected error ! ERROR:'+err,phoneNumber:'null'})
+                    }
+                    if(user==null){
+                      res.status(420)
+                      res.send({success:false,msg:'No user found .',phoneNumber:'null'})
+                    }else{
+                          send_OTP_SMS(user.phone)
+                          res.status(200)
+                          return res.send({success:true,msg:'OTP sent successfully',phoneNumber:user.phone})
+                    }
+                     
+                })
+            }
+        })
+    },
+
+    productBuyConfirm:async(req,res)=>{
+        var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
+        var currentStock=(req.body.stock)-(req.body.qty)
+        if(verifyStatus){
+            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:currentStock})
+            res.status(200)
+           return res.send({success:true,msg:'Product ordered'})
+        }else{
+            res.status(408)
+            return res.send({success:false,msg:'Product not ordered !'})
+        }
+
+        
+    },
+
    
 //...............below these are for demo purpose........
      uploadDummy:function(req,res,err){
@@ -662,4 +755,4 @@ var functions = {
 
 
 module.exports ={functions,
-upload,uploadDumm}
+upload,uploadDumm,send_OTP_SMS,verify_OTP_SMS}

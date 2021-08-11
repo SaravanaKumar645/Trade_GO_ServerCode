@@ -26,7 +26,8 @@
     "multer": "^1.4.2",
     "nodemailer": "^6.6.3",
     "passport": "^0.4.1",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "twilio": "^3.66.1"
   },
   "devDependencies": {
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
