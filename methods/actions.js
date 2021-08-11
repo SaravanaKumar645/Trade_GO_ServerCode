@@ -723,12 +723,19 @@ var functions = {
         var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var currentStock=(req.body.stock)-(req.body.qty)
         if(verifyStatus){
-            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:currentStock})
-            res.status(200)
-           return res.send({success:true,msg:'Product ordered'})
+            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:currentStock},{new:true},function(err,product){
+                if(!err && !(product==null)){
+                    res.status(200)
+                    return res.send({success:true,msg:'Product ordered',productOrdered:JSON.stringify(product)})
+                }else{
+                    res.status(408)
+                    return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
+                }
+            })
+            
         }else{
             res.status(408)
-            return res.send({success:false,msg:'Product not ordered !'})
+            return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
         }
 
         
