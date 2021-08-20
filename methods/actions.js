@@ -1,6 +1,7 @@
 var User = require('../models/user')
 var bcrypt=require('bcrypt')
 var Product=require('../models/productImage')
+var UserOrders=require('../models/userOrders')
 var Cart=require('../models/userCart')
 var jwt = require('jwt-simple')
 var config = require('../config/dbConfig')
@@ -723,10 +724,34 @@ var functions = {
         var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var updateStock=req.body.currentStock
         if(verifyStatus){
-            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},function(err,product){
+            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},async function(err,product){
                 if(!err && !(product==null)){
-                    res.status(200)
-                    return res.send({success:true,msg:'Product ordered',productOrdered:JSON.stringify(product)})
+                    const orderedProduct=new UserOrders({
+                        _id:product._id,
+                        user_id:product.user_id,
+                        p_name:product.p_name,
+                        p_price:product.p_price,
+                        p_stock:product.p_stock,
+                        p_description:product.p_description,
+                        p_category:product.p_category,
+                        image_key_1:product.image_key_1,
+                        image_key_2:product.image_key_2,
+                        image_key_3:product.image_key_3,
+                        image_url_1:product.image_url_1,
+                        image_url_2:product.image_url_2,
+                        image_url_3:product.image_url_3
+
+                      })
+                    await orderedProduct.save(function(err,Order){
+                        if(err){
+                            console.log(err)
+                        }else{
+                            console.log(Order)
+                            res.status(200)
+                            return res.send({success:true,msg:'Product ordered',productOrdered:JSON.stringify(product)})
+                        }
+                    })
+                    
                 }else{
                     res.status(408)
                     return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
