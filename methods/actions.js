@@ -116,9 +116,9 @@ const s3Object=new S3({
          console.log(data)
      })
  }
- const verify_OTP_SMS=async function(phone,Vcode){
+ function verify_OTP_SMS(phone,Vcode){
     var func_response
-     await twilio.verify
+      twilio.verify
      .services(serviceSID)
      .verificationChecks
      .create({
@@ -723,7 +723,7 @@ var functions = {
     },
 
     productBuyConfirm:async(req,res)=>{
-        var verifyStatus= await verify_OTP_SMS(req.body.phone,req.body.otpCode)
+        var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var updateStock=req.body.currentStock
         if(verifyStatus==true){
             console.log('Verify status : '+verifyStatus)
