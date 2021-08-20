@@ -702,7 +702,7 @@ var functions = {
             }else{
                 await User.findById(req.body.uid,function(err,user){
                     if(err){
-                        res.status(419)
+                        res.status(408)
                         return res.send({success:false,msg:'Unexpected error ! ERROR:'+err,phoneNumber:'null'})
                     }
                     if(user==null){
@@ -721,9 +721,9 @@ var functions = {
 
     productBuyConfirm:async(req,res)=>{
         var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
-        var currentStock=(req.body.stock)-(req.body.qty)
+        var updateStock=req.body.currentStock
         if(verifyStatus){
-            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:currentStock},{new:true},function(err,product){
+            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},function(err,product){
                 if(!err && !(product==null)){
                     res.status(200)
                     return res.send({success:true,msg:'Product ordered',productOrdered:JSON.stringify(product)})
