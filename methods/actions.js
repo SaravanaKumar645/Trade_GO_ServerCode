@@ -117,6 +117,7 @@ const s3Object=new S3({
      })
  }
  const verify_OTP_SMS=function(phone,Vcode){
+    var func_response
      twilio.verify
      .services(serviceSID)
      .verificationChecks
@@ -127,12 +128,13 @@ const s3Object=new S3({
      .then(data=>{
          if(data.status==='approved'){
              console.log(data)
-             return data.valid
+             func_response= true
          }else{
              console.log(data)
-             return false
+             func_response= false
          }
      })
+     return func_response
  }
 
 //Functions for operations
@@ -721,9 +723,9 @@ var functions = {
     },
 
     productBuyConfirm:async(req,res)=>{
-        var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
+        var verifyStatus= await verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var updateStock=req.body.currentStock
-        if(verifyStatus){
+        if(verifyStatus==true){
             console.log('Verify status : '+verifyStatus)
             await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},async function(err,product){
                 if(!err && !(product==null)){
