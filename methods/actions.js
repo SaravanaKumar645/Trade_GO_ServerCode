@@ -724,6 +724,7 @@ var functions = {
         var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var updateStock=req.body.currentStock
         if(verifyStatus){
+            console.log('Verify status : '+verifyStatus)
             await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},async function(err,product){
                 if(!err && !(product==null)){
                     const orderedProduct=new UserOrders({
@@ -753,12 +754,14 @@ var functions = {
                     })
                     
                 }else{
+                    console.log(err)
                     res.status(408)
                     return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
                 }
             })
             
         }else{
+            console.log('Verify status : '+verifyStatus)
             res.status(408)
             return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
         }
