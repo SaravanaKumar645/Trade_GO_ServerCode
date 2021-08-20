@@ -116,9 +116,9 @@ const s3Object=new S3({
          console.log(data)
      })
  }
- const verify_OTP_SMS=function(phone,Vcode){
+ const verify_OTP_SMS=async function(phone,Vcode){
     var func_response
-     twilio.verify
+     await twilio.verify
      .services(serviceSID)
      .verificationChecks
      .create({
