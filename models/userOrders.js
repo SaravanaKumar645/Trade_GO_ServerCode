@@ -12,7 +12,8 @@ const orderSchema=new mongoose.Schema({
     image_url_1:{type:String,require:true},
     image_url_2:{type:String,require:true},
     image_url_3:{type:String,require:true},
-    user_id:{type:String,require:true}
+    user_id:{type:String,require:true},
+    order_user_id:{type:String,require:true}
 },{timestamps:true},{collection:'userOrders'})
 
 module.exports=mongoose.model('UserOrder',orderSchema)

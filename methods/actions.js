@@ -113,10 +113,10 @@ const s3Object=new S3({
          channel:'sms'
      })
      .then(data=>{
-         console.log(data)
+         //console.log(data)
      })
  }
- function verify_OTP_SMS(phone,Vcode){
+ async function verify_OTP_SMS(phone,Vcode,cb){
     var func_response
       twilio.verify
      .services(serviceSID)
@@ -125,16 +125,25 @@ const s3Object=new S3({
          to:`+91${phone}`,
          code:Vcode
      })
-     .then(data=>{
+     .then(function(data){
          if(data.status==='approved'){
-             console.log(data)
-             func_response= true
+             
+             func_response=true
+             console.log(func_response)
+             cb(true);
          }else{
-             console.log(data)
+             //console.log(data)
              func_response= false
+             console.log(func_response)
+             cb(false);
          }
      })
-     return func_response
+    //  if(func_response){
+    //     return true
+    //  }else{
+    //     return false
+    //  }
+     
  }
 
 //Functions for operations
@@ -722,52 +731,64 @@ var functions = {
         })
     },
 
-    productBuyConfirm:async(req,res)=>{
-        var verifyStatus= verify_OTP_SMS(req.body.phone,req.body.otpCode)
+    productBuyConfirm:async(req,res)=>{  
+        //var verifyStatus
+        //var verifyStatus= await verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var updateStock=req.body.currentStock
-        if(verifyStatus==true){
-            console.log('Verify status : '+verifyStatus)
-            await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},async function(err,product){
-                if(!err && !(product==null)){
-                    const orderedProduct=new UserOrders({
-                        _id:product._id,
-                        user_id:product.user_id,
-                        p_name:product.p_name,
-                        p_price:product.p_price,
-                        p_stock:product.p_stock,
-                        p_description:product.p_description,
-                        p_category:product.p_category,
-                        image_key_1:product.image_key_1,
-                        image_key_2:product.image_key_2,
-                        image_key_3:product.image_key_3,
-                        image_url_1:product.image_url_1,
-                        image_url_2:product.image_url_2,
-                        image_url_3:product.image_url_3
 
-                      })
-                    await orderedProduct.save(function(err,Order){
-                        if(err){
-                            console.log(err)
-                        }else{
-                            console.log(Order)
-                            res.status(200)
-                            return res.send({success:true,msg:'Product ordered',productOrdered:JSON.stringify(product)})
-                        }
-                    })
-                    
-                }else{
-                    console.log(err)
-                    res.status(408)
-                    return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
-                }
-            })
-            
-        }else{
-            console.log('Verify status : '+verifyStatus)
-            res.status(408)
-            return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
-        }
 
+         var verifyStatus
+         await verify_OTP_SMS(req.body.phone,req.body.otpCode,async function(result){
+             console.log(result)
+             verifyStatus = result;
+             console.log(verifyStatus);
+             if(verifyStatus){
+                console.log('Verify status : '+verifyStatus)
+                await Product.findByIdAndUpdate(req.body.p_id,{p_stock:updateStock},{new:true},async function(err,product){
+                    if(!err && !(product==null)){
+                        const orderedProduct=new UserOrders({
+                            _id:product._id,
+                            order_user_id:req.body.uid,
+                            user_id:product.user_id,
+                            p_name:product.p_name,
+                            p_price:product.p_price,
+                            p_stock:product.p_stock,
+                            p_description:product.p_description,
+                            p_category:product.p_category,
+                            image_key_1:product.image_key_1,
+                            image_key_2:product.image_key_2,
+                            image_key_3:product.image_key_3,
+                            image_url_1:product.image_url_1,
+                            image_url_2:product.image_url_2,
+                            image_url_3:product.image_url_3
+    
+                          })
+                        await orderedProduct.save(function(err,Order){
+                            if(err){
+                                console.log(err)
+                            }else{
+                                console.log(Order)
+                                res.status(200)
+                                return res.send({success:true,msg:'Product ordered',productOrdered:JSON.stringify(product)})
+                            }
+                        })
+                        
+                    }else{
+                        console.log(err)
+                        res.status(408)
+                        return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
+                    }
+                })
+                
+            }else{
+                console.log('Verify status : '+verifyStatus)
+                res.status(408)
+                return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
+            }
+    
+         })
+
+        
         
     },
 
