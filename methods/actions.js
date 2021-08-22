@@ -130,20 +130,14 @@ const s3Object=new S3({
              
              func_response=true
              console.log(func_response)
-             cb(true);
+             return cb(true);
          }else{
              //console.log(data)
              func_response= false
              console.log(func_response)
-             cb(false);
+             return cb(false);
          }
-     })
-    //  if(func_response){
-    //     return true
-    //  }else{
-    //     return false
-    //  }
-     
+     }) 
  }
 
 //Functions for operations
@@ -763,7 +757,7 @@ var functions = {
                             image_url_3:product.image_url_3
     
                           })
-                        await orderedProduct.save(function(err,Order){
+                         orderedProduct.save(function(err,Order){
                             if(err){
                                 console.log(err)
                             }else{
