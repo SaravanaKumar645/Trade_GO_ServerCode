@@ -781,7 +781,40 @@ var functions = {
          })  
     },
 
-   
+    getUserOrders:async(req,res)=>{
+        await UserOrders.find({
+            order_user_id:req.body.user_id
+         })
+          .exec()
+          .then(files=>{
+              const count=''+files.length
+              const response={
+                  products:files.map(doc=>{
+                      return{
+                          name:doc.p_name,
+                          desc:doc.p_description,
+                          category:doc.p_category,
+                          price:doc.p_price,
+                          stock:doc.p_stock,
+                          p_id:doc._id,
+                          user_id:doc.user_id,
+                          product_key_1:doc.image_key_1,
+                           product_key_2:doc.image_key_2,
+                           product_key_3:doc.image_key_3,
+                           product_url_1:doc.image_url_1,
+                           product_url_2:doc.image_url_2,
+                           product_url_3:doc.image_url_3
+                      }
+                  })
+              }
+             res.status(200)
+             return res.json({success:false,msg:`Your have made ${count} orders !`,data:JSON.stringify(response),count:count})
+          }).catch(err=>{
+              console.log(err)
+              res.status(408)
+              res.json({success:false,msg:"Error getting products . Close the application and try again !"+err,data:null,count:0})
+          })
+    },
 //...............below these are for demo purpose........
      uploadDummy:function(req,res,err){
          

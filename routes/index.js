@@ -72,6 +72,9 @@ router.post('/product-buy-sendOTP',method.productBuyInitiate)
 //@route POST/product-buy-verifyOTP
 router.post('/product-buy-verifyOTP',method.productBuyConfirm)
 
+//@desc Retrieving user orders from the server .
+//@route POST/get-user-orders
+router.post('/get-user-orders',method.getUserOrders)
 
 
 //--------------BELOW THESE ARE ONLY FOR DEMO . THESE SHOULD NOT BE PART OF FINAL VERSION----------------
