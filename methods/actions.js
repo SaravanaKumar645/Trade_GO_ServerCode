@@ -726,11 +726,7 @@ var functions = {
     },
 
     productBuyConfirm:async(req,res)=>{  
-        //var verifyStatus
-        //var verifyStatus= await verify_OTP_SMS(req.body.phone,req.body.otpCode)
         var updateStock=req.body.currentStock
-
-
          var verifyStatus
          await verify_OTP_SMS(req.body.phone,req.body.otpCode,async function(result){
              console.log(result)
@@ -760,6 +756,8 @@ var functions = {
                          orderedProduct.save(function(err,Order){
                             if(err){
                                 console.log(err)
+                                res.status(408)
+                                return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
                             }else{
                                 console.log(Order)
                                 res.status(200)
@@ -780,10 +778,7 @@ var functions = {
                 return res.send({success:false,msg:'Product not ordered !',productOrdered:'null'})
             }
     
-         })
-
-        
-        
+         })  
     },
 
    
