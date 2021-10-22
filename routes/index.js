@@ -5,11 +5,22 @@ const actions = require("../methods/actions");
 const method = actions.functions;
 const upload = actions.upload;
 const up = actions.uploadDumm;
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 //for demo
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   // res.sendFile(path.join(__dirname+'/resetPassword.html'))
-
+  await fetch(
+    "https://zoho-invoice-server.herokuapp.com/api/authenticate-user",
+    {
+      method: "GET",
+    }
+  )
+    .then((result) => result.json())
+    .then((result) => {
+      console.log(result);
+    });
   res.cookie("accessToken", "hegsdsjduwuewkn273u2e", {
     domain: "https://zoho-invoice-clone.vercel.app/",
 
@@ -19,12 +30,6 @@ router.get("/", (req, res) => {
   });
   res.send("Welcome to Trade GO !");
 });
-router.get(
-  "https://zoho-invoice-server.herokuapp.com/api/authenticate-user",
-  (req, res) => {
-    res.send({ msg: "Zoho invoice heroku server" });
-  }
-);
 
 //@desc Adding new user
 //@route POST /adduser
