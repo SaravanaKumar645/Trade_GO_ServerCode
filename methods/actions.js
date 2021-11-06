@@ -134,7 +134,6 @@ async function verify_OTP_SMS(phone, Vcode, cb) {
 
 //Functions for operations
 var functions = {
-  
   SignUp: async (req, res) => {
     if (
       !req.body.email ||
@@ -158,15 +157,13 @@ var functions = {
         if (num == 0) {
           newUser.save(async function (err, newUser) {
             if (err) {
-              return res
-                .status(408)
-                .send({
-                  success: false,
-                  msg: "Failed to create User !. Try again",
-                  id: "nil",
-                  email: "nil",
-                  name: "nil",
-                });
+              return res.status(408).send({
+                success: false,
+                msg: "Failed to create User !. Try again",
+                id: "nil",
+                email: "nil",
+                name: "nil",
+              });
             } else {
               var mailOpt = {
                 from: "admin@tradego.com",
@@ -205,27 +202,23 @@ var functions = {
               var uid1 = "" + newUser._id;
               var mail = "" + newUser.email;
               var name = "" + newUser.name;
-              return res
-                .status(200)
-                .send({
-                  success: true,
-                  msg: "Successfully created user : " + mail,
-                  id: uid1,
-                  email: mail,
-                  name: name,
-                });
+              return res.status(200).send({
+                success: true,
+                msg: "Successfully created user : " + mail,
+                id: uid1,
+                email: mail,
+                name: name,
+              });
             }
           });
         } else {
-          return res
-            .status(405)
-            .send({
-              success: false,
-              msg: "Sign In failed : User Aleady exists !",
-              id: "nil",
-              email: "nil",
-              name: "nil",
-            });
+          return res.status(405).send({
+            success: false,
+            msg: "Sign In failed : User Aleady exists !",
+            id: "nil",
+            email: "nil",
+            name: "nil",
+          });
         }
       });
     }
@@ -259,15 +252,13 @@ var functions = {
               var token = jwt.encode(user, config.secret);
 
               console.log("in login success ! ID: " + uid1);
-              return res
-                .status(200)
-                .send({
-                  success: true,
-                  msg: `Successful Login !  UserId : ` + uid1,
-                  id: uid1,
-                  email: mail,
-                  name: name,
-                });
+              return res.status(200).send({
+                success: true,
+                msg: `Successful Login !  UserId : ` + uid1,
+                id: uid1,
+                email: mail,
+                name: name,
+              });
             } else {
               res.status(405);
               return res.json({
@@ -370,13 +361,11 @@ var functions = {
             });
           }
           if (user == null) {
-            return res
-              .status(408)
-              .send({
-                success: false,
-                msg: "User not exists !. Check the email and try again",
-                token_id: "nil",
-              });
+            return res.status(408).send({
+              success: false,
+              msg: "User not exists !. Check the email and try again",
+              token_id: "nil",
+            });
           } else {
             user.resetToken = token;
             user.expireToken = Date.now() + 1800000;
@@ -535,7 +524,7 @@ var functions = {
         product_location.push(data.Location);
         product_key.push(data.Key);
 
-        if (flag == p_image.length) {
+        if (flag === p_image.length) {
           const newProduct = new Product({
             user_id: req.body.user_id,
             p_name: req.body.p_name,
@@ -1038,8 +1027,6 @@ var functions = {
   uploadDummy: function (req, res, err) {
     if (req.file) {
       console.log(req.file);
-      console.log(req.body.name);
-      console.log(req.body.price);
 
       res.status(200);
       res.send({ success: true, msg: "Hi" + req.file.path, pid: "200" });

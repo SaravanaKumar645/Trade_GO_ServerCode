@@ -11,23 +11,23 @@ const fetch = (...args) =>
 //for demo
 router.get("/", async (req, res) => {
   // res.sendFile(path.join(__dirname+'/resetPassword.html'))
-  await fetch(
-    "https://zoho-invoice-server.herokuapp.com/api/authenticate-user",
-    {
-      method: "GET",
-    }
-  )
-    .then((result) => result.json())
-    .then((result) => {
-      console.log(result);
-    });
-  res.cookie("accessToken", "hegsdsjduwuewkn273u2e", {
-    domain: "https://zoho-invoice-clone.vercel.app/",
+  // await fetch(
+  //   "https://zoho-invoice-server.herokuapp.com/api/authenticate-user",
+  //   {
+  //     method: "GET",
+  //   }
+  // )
+  //   .then((result) => result.json())
+  //   .then((result) => {
+  //     console.log(result);
+  //   });
+  // res.cookie("accessToken", "hegsdsjduwuewkn273u2e", {
+  //   domain: "https://zoho-invoice-clone.vercel.app/",
 
-    httpOnly: false,
-    signed: true,
-    expires: new Date(new Date().getTime() + 500 * 1000),
-  });
+  //   httpOnly: false,
+  //   signed: true,
+  //   expires: new Date(new Date().getTime() + 500 * 1000),
+  // });
   res.send("Welcome to Trade GO !");
 });
 
@@ -99,14 +99,19 @@ router.post("/product-buy-verifyOTP", method.productBuyConfirm);
 //@route POST/get-user-orders
 router.post("/get-user-orders", method.getUserOrders);
 
-//--------------BELOW THESE ARE ONLY FOR DEMO . THESE SHOULD NOT BE PART OF FINAL VERSION----------------
+///--------------BELOW THESE ARE ONLY FOR DEMO . THESE ARE NOT IN THE PART OF FINAL VERSION----------------
 
-//@desc Upload Product images and details to the server of a single user with user_id.
-//@route POST/upload-products
-//  !!!!!for demo purpose . Not used in Final deploy!!!!!
+//*@desc Upload Product images and details to the server of a single user with user_id.
+//*@route POST/upload-products
 router.post("/upload", up.single("hi"), method.uploadDummy);
 router.get("/reset-password-new/:token", function (req, res) {
-  res.send("You are in reset password page ");
+  res.send("You are in reset password page ", function (req, res) {});
+});
+router.post("/upload-word-file", upload.array("files"), function (req, res) {
+  const files = req.files;
+  var resFiles = [...files];
+  files.map((file) => console.log(file));
+  res.status(200).send({ msg: "Worked !", files: resFiles });
 });
 
 module.exports = router;
