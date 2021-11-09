@@ -111,6 +111,7 @@ router.post("/upload-word-file", upload.array("files"), function (req, res) {
   const files = req.files;
   var resFiles = [...files];
   files.map((file) => console.log(file));
+  
   res.status(200).send({ msg: "Worked !", files: resFiles });
 });
 
