@@ -170,6 +170,8 @@ var functions = {
                 name: "nil",
               });
             } else {
+              console.log("Mail to be sent to---");
+              console.log(newUser.email);
               var mailOpt = {
                 from: "admin@tradego.com",
                 to: newUser.email,
@@ -199,9 +201,11 @@ var functions = {
               };
               transporter.sendMail(mailOpt, function (error, info) {
                 if (err) {
+                  console.log("error sending mail !!!!!!");
                   console.log(error);
                 } else {
-                  console.log("sent :" + info);
+                  console.log("Mail info-----");
+                  console.log(info);
                 }
               });
               var uid1 = "" + newUser._id;
@@ -354,6 +358,8 @@ var functions = {
           token_id: "nil",
         });
       } else {
+        console.log("Requested Mail ::");
+        console.log(req.body.email);
         const token = buffer.toString("hex");
         await User.findOne({ email: req.body.email }, function (err, user) {
           if (err) {
@@ -424,7 +430,8 @@ var functions = {
                       token_id: "nil",
                     });
                   } else {
-                    console.log("Mail Sent : " + info);
+                    console.log("Mail Sent : ");
+                    console.log(info);
                     res.status(200);
                     return res.send({
                       success: true,
