@@ -9,7 +9,7 @@ const cookieParser = require("cookie-parser");
 // const actions=require('./methods/actions')
 // const sendsms=actions.send_OTP_SMS
 // const verifysms=actions.verify_OTP_SMS
-
+// heroku logs -a tradego-android-server --tail
 console.log("hello");
 
 connectDB();
