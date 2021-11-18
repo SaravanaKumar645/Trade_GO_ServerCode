@@ -14,10 +14,15 @@ const crypto = require("crypto");
 const transporter = nodeMailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.MAIL_ID,
-    pass: process.env.MAIL_PASS,
+    type: "OAuth2",
+    user: process.env.NM_MAIL_ID,
+    pass: process.env.NM_MAIL_PASS,
+    clientId: process.env.NM_CLIENT_ID,
+    clientSecret: process.env.NM_CLIENT_SECRET,
+    refreshToken: process.env.NM_REFRRESH_TOKEN,
   },
 });
+
 //Multer initialize
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
