@@ -116,7 +116,10 @@ const send_OTP_SMS = function (phone) {
     });
 };
 async function verify_OTP_SMS(phone, Vcode, cb) {
-  var func_response;
+  console.log("Inside Otp verify service---");
+  console.log(`${typeof phone} : ${phone}`);
+  console.log(`My code : ${Vcode}`);
+
   twilio.verify
     .services(serviceSID)
     .verificationChecks.create({
@@ -125,13 +128,9 @@ async function verify_OTP_SMS(phone, Vcode, cb) {
     })
     .then(function (data) {
       if (data.status === "approved") {
-        func_response = true;
-        console.log(func_response);
         return cb(true);
       } else {
-        //console.log(data)
-        func_response = false;
-        console.log(func_response);
+        console.log(data);
         return cb(false);
       }
     });
@@ -918,6 +917,7 @@ var functions = {
       req.body.phone,
       req.body.otpCode,
       async function (result) {
+        console.log("Is Mobile Verfied");
         console.log(result);
         verifyStatus = result;
         console.log(verifyStatus);
@@ -976,7 +976,7 @@ var functions = {
             }
           );
         } else {
-          console.log("Verify status : " + verifyStatus);
+          console.log("Verify status : " + result);
           res.status(408);
           return res.send({
             success: false,
