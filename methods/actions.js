@@ -155,7 +155,7 @@ var functions = {
         phone: req.body.phone,
       });
 
-      await User.findOne({
+      User.findOne({
         email: req.body.email,
       }).countDocuments(function (err, num) {
         if (num == 0) {
@@ -277,7 +277,11 @@ var functions = {
           });
         }
       }
-    );
+    )
+      .clone()
+      .catch(function (err) {
+        console.log(err);
+      });
   },
 
   resetPassword: async function (req, res) {
@@ -343,7 +347,11 @@ var functions = {
           );
         }
       }
-    );
+    )
+      .clone()
+      .catch(function (err) {
+        console.log(err);
+      });
   },
 
   requestPasswordMail: async function (req, res) {
@@ -443,7 +451,11 @@ var functions = {
               }
             });
           }
-        });
+        })
+          .clone()
+          .catch(function (err) {
+            console.log(err);
+          });
       }
     });
   },
