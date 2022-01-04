@@ -1,17 +1,14 @@
 const mongoose = require("mongoose");
-const dbConfig = require("./dbConfig");
-var dbName = "";
+require("dotenv").config();
+const databaseURL = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.8sjto.mongodb.net/Tradego-mob
+?retryWrites=true&w=majority`;
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(dbConfig.database);
-
-    dbName = conn.connections[0].name;
+    const conn = await mongoose.connect(databaseURL);
     console.log(`MongoDB connected : ${conn.connection.host}`);
     console.log("Database Name::" + conn.connections[0].name);
   } catch (err) {
     console.log(err);
-    process.exit(1);
   }
 };
-console.log(dbName);
-module.exports = { connectDB, dbName };
+module.exports = { connectDB };

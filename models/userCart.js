@@ -17,7 +17,7 @@ const cartSchema = new mongoose.Schema(
     user_id: { type: String, require: true },
   },
   { timestamps: true },
-  { collection: "usercarts" }
+  { collection: "userCarts" }
 );
 
 module.exports = mongoose.model("UserCart", cartSchema);

@@ -1,6 +1,7 @@
-var mongoose=require('mongoose')
+var mongoose = require("mongoose");
 
-const imgSchema=new mongoose.Schema({
+const imgSchema = new mongoose.Schema(
+  {
     p_name: { type: String, require: true },
     p_price: { type: String, require: true },
     p_stock: { type: String, require: true },
@@ -12,7 +13,10 @@ const imgSchema=new mongoose.Schema({
     image_url_1: { type: String, require: true },
     image_url_2: { type: String, require: true },
     image_url_3: { type: String, require: true },
-    user_id: { type: String, require: true }
-},{timestamps:true},{collection:'productimages'})
+    user_id: { type: String, require: true },
+  },
+  { timestamps: true },
+  { collection: "productDetails" }
+);
 
-module.exports=mongoose.model('ProductImage',imgSchema)
+module.exports = mongoose.model("ProductImage", imgSchema);
