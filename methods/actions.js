@@ -369,9 +369,8 @@ var functions = {
               msg: "Unexpected error . Try again !",
               token_id: "nil",
             });
-          }
-          if (!user) {
-            console.log("Logged user: ");
+          } else if (user == null) {
+            console.log("Logged user(else if): ");
             console.log(user);
             //changed user==null
             return res.status(408).send({
@@ -380,7 +379,7 @@ var functions = {
               token_id: "nil",
             });
           } else {
-            console.log("Logged user: ");
+            console.log("Logged user(else): ");
             console.log(user);
             user.resetToken = token;
             user.expireToken = Date.now() + 1800000;
