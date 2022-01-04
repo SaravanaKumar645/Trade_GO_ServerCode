@@ -3,12 +3,7 @@ const dbConfig = require("./dbConfig");
 var dbName = "";
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(dbConfig.database, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-    });
+    const conn = await mongoose.connect(dbConfig.database);
 
     dbName = conn.connections[0].name;
     console.log(`MongoDB connected : ${conn.connection.host}`);
