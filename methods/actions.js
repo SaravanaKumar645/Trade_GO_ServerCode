@@ -360,44 +360,46 @@ var functions = {
         console.log("Requested Mail ::");
         console.log(req.body.email);
         const token = buffer.toString("hex");
-        await User.findOne({ email: req.body.email }, function (err, user) {
-          if (err) {
-            console.log("Inside outer block :" + err);
-            res.status(405);
-            return res.send({
-              success: false,
-              msg: "Unexpected error . Try again !",
-              token_id: "nil",
-            });
-          } else if (user == null) {
-            console.log("Logged user(else if): ");
-            console.log(user);
-            //changed user==null
-            return res.status(408).send({
-              success: false,
-              msg: "User not exists !. Check the email and try again",
-              token_id: "nil",
-            });
-          } else {
-            console.log("Logged user(else): ");
-            console.log(user);
-            user.resetToken = token;
-            user.expireToken = Date.now() + 1800000;
-            user.save(function (err, user) {
-              if (err) {
-                console.log("Inside catch nested block :" + err);
-                res.status(405);
-                return res.send({
-                  success: false,
-                  msg: "Unexpected error . Try again !",
-                  token_id: "nil",
-                });
-              } else {
-                var resetLinkMail = {
-                  to: user.email,
-                  from: "no-reply@tradego.com",
-                  subject: "Password reset link -reg",
-                  html: `
+        await User.findOne(
+          { email: req.body.email },
+          async function (err, user) {
+            if (err) {
+              console.log("Inside outer block :" + err);
+              res.status(405);
+              return res.send({
+                success: false,
+                msg: "Unexpected error . Try again !",
+                token_id: "nil",
+              });
+            } else if (user == null) {
+              console.log("Logged user(else if): ");
+              console.log(user);
+              //changed user==null
+              return res.status(408).send({
+                success: false,
+                msg: "User not exists !. Check the email and try again",
+                token_id: "nil",
+              });
+            } else {
+              console.log("Logged user(else): ");
+              console.log(user);
+              user.resetToken = token;
+              user.expireToken = Date.now() + 1800000;
+              await user.save(function (err, user) {
+                if (err) {
+                  console.log("Inside catch nested block :" + err);
+                  res.status(405);
+                  return res.send({
+                    success: false,
+                    msg: "Unexpected error . Try again !",
+                    token_id: "nil",
+                  });
+                } else {
+                  var resetLinkMail = {
+                    to: user.email,
+                    from: "no-reply@tradego.com",
+                    subject: "Password reset link -reg",
+                    html: `
                                 <center>
                                 <div class="emailbox" style="width: auto; padding: 40px; height: auto; border-radius: 10px; border: 3px outset rgb(36, 105, 253); display: list-item;">
                                 <center>
@@ -423,30 +425,31 @@ var functions = {
                                 </div>
                                 </center>
                                 `,
-                };
-                transporter.sendMail(resetLinkMail, function (error, info) {
-                  if (error) {
-                    res.status(408);
-                    return res.send({
-                      success: false,
-                      msg: "Email not sent . Kindly try again !",
-                      token_id: "nil",
-                    });
-                  } else {
-                    console.log("Mail Sent : ");
-                    console.log(info);
-                    res.status(200);
-                    return res.send({
-                      success: true,
-                      msg: "Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.",
-                      token_id: token,
-                    });
-                  }
-                });
-              }
-            });
+                  };
+                  transporter.sendMail(resetLinkMail, function (error, info) {
+                    if (error) {
+                      res.status(401);
+                      return res.send({
+                        success: false,
+                        msg: "Email not sent . Kindly try again !",
+                        token_id: "nil",
+                      });
+                    } else {
+                      console.log("Mail Sent : ");
+                      console.log(info);
+                      res.status(200);
+                      return res.send({
+                        success: true,
+                        msg: "Email sent !.Check your mail. Sometimes the mail will be in SPAM folder.",
+                        token_id: token,
+                      });
+                    }
+                  });
+                }
+              });
+            }
           }
-        });
+        );
       }
     });
   },
