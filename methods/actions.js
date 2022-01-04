@@ -1,4 +1,4 @@
-var User = require("../models/user");
+const User = require("../models/user");
 var bcrypt = require("bcrypt");
 var Product = require("../models/productImage");
 var UserOrders = require("../models/userOrders");
@@ -235,7 +235,7 @@ var functions = {
   SignIn: async (req, res) => {
     console.log("in login");
 
-    User.findOne(
+    await User.findOne(
       {
         email: req.body.email,
       },
@@ -286,7 +286,7 @@ var functions = {
     var token = req.body.token_id;
 
     const pass = req.body.n_password;
-    User.findOne(
+    await User.findOne(
       { resetToken: token, email: email, expireToken: { $gte: Date.now() } },
       async (err, user) => {
         if (err) {
@@ -360,7 +360,7 @@ var functions = {
         console.log("Requested Mail ::");
         console.log(req.body.email);
         const token = buffer.toString("hex");
-        User.findOne({ email: req.body.email }, function (err, user) {
+        await User.findOne({ email: req.body.email }, function (err, user) {
           if (err) {
             console.log("Inside outer block :" + err);
             res.status(405);
@@ -371,6 +371,8 @@ var functions = {
             });
           }
           if (!user) {
+            console.log("Logged user: ");
+            console.log(user);
             //changed user==null
             return res.status(408).send({
               success: false,
@@ -378,6 +380,8 @@ var functions = {
               token_id: "nil",
             });
           } else {
+            console.log("Logged user: ");
+            console.log(user);
             user.resetToken = token;
             user.expireToken = Date.now() + 1800000;
             user.save(function (err, user) {
