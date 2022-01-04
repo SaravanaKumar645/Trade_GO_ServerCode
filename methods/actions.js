@@ -235,7 +235,7 @@ var functions = {
   SignIn: async (req, res) => {
     console.log("in login");
 
-    await User.findOne(
+    User.findOne(
       {
         email: req.body.email,
       },
@@ -277,11 +277,7 @@ var functions = {
           });
         }
       }
-    )
-      .clone()
-      .catch(function (err) {
-        console.log(err);
-      });
+    );
   },
 
   resetPassword: async function (req, res) {
@@ -290,7 +286,7 @@ var functions = {
     var token = req.body.token_id;
 
     const pass = req.body.n_password;
-    await User.findOne(
+    User.findOne(
       { resetToken: token, email: email, expireToken: { $gte: Date.now() } },
       async (err, user) => {
         if (err) {
@@ -347,11 +343,7 @@ var functions = {
           );
         }
       }
-    )
-      .clone()
-      .catch(function (err) {
-        console.log(err);
-      });
+    );
   },
 
   requestPasswordMail: async function (req, res) {
@@ -368,7 +360,7 @@ var functions = {
         console.log("Requested Mail ::");
         console.log(req.body.email);
         const token = buffer.toString("hex");
-        await User.findOne({ email: req.body.email }, function (err, user) {
+        User.findOne({ email: req.body.email }, function (err, user) {
           if (err) {
             console.log("Inside outer block :" + err);
             res.status(405);
@@ -451,11 +443,7 @@ var functions = {
               }
             });
           }
-        })
-          .clone()
-          .catch(function (err) {
-            console.log(err);
-          });
+        });
       }
     });
   },
