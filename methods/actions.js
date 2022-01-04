@@ -201,10 +201,10 @@ var functions = {
               transporter.sendMail(mailOpt, function (error, info) {
                 if (err) {
                   console.log("error sending mail !!!!!!");
-                  console.log(error);
+                  console.log(JSON.stringify(error));
                 } else {
                   console.log("Mail info-----");
-                  console.log(info);
+                  console.log(JSON.stringify(info));
                 }
               });
               var uid1 = "" + newUser._id;
@@ -347,7 +347,7 @@ var functions = {
   },
 
   requestPasswordMail: async function (req, res) {
-    crypto.randomBytes(32, async (err, buffer) => {
+    crypto.randomBytes(16, async (err, buffer) => {
       if (err) {
         console.log("Inside crypto block :" + err);
         res.status(405);
@@ -370,7 +370,8 @@ var functions = {
               token_id: "nil",
             });
           }
-          if (user == null) {
+          if (!user) {
+            //changed user==null
             return res.status(408).send({
               success: false,
               msg: "User not exists !. Check the email and try again",
